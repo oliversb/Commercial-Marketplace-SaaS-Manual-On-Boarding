@@ -4,6 +4,7 @@
 namespace CommandCenter.Models
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using Microsoft.Marketplace.SaaS.Models;
 
     /// <summary>
@@ -14,11 +15,13 @@ namespace CommandCenter.Models
         /// <summary>
         ///  Gets or sets operations.
         /// </summary>
+        [Display(Name = "Operations")]
         public List<Operation> Operations { get; set; }
 
         /// <summary>
         /// Gets or sets subscription name.
         /// </summary>
+        [Display(Name = "Subscription name")]
         public string SubscriptionName { get; set; }
     }
 }

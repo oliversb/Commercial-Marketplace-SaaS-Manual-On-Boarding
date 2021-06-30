@@ -19,9 +19,7 @@ namespace CommandCenter.Controllers
     /// <summary>
     /// Webhook controller.
     /// </summary>
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    // Specify the auth scheme to be used for logging on users. This is for supporting WebAPI auth
-    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] // Specify the auth scheme to be used for logging on users. This is for supporting WebAPI auth
     [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
@@ -65,11 +63,11 @@ namespace CommandCenter.Controllers
             var payload = string.Empty;
             using (var reader = new StreamReader(this.Request.Body, Encoding.UTF8))
             {
-                payload = await reader.ReadToEndAsync().ConfigureAwait(false);
+                payload = await reader.ReadToEndAsync();
                 this.logger.LogInformation($"{payload}");
             }
 
-            await this.marketplaceProcessor.ProcessWebhookNotificationAsync(JsonConvert.DeserializeObject<WebhookPayload>(payload), CancellationToken.None).ConfigureAwait(false);
+            await this.marketplaceProcessor.ProcessWebhookNotificationAsync(JsonConvert.DeserializeObject<WebhookPayload>(payload), CancellationToken.None);
 
             return this.Ok();
         }

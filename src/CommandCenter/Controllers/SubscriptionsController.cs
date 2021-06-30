@@ -10,6 +10,7 @@ namespace CommandCenter.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using CommandCenter.DimensionUsageStore;
+    using CommandCenter.Metering;
     using CommandCenter.Models;
     using CommandCenter.OperationsStore;
 
@@ -90,7 +91,7 @@ namespace CommandCenter.Controllers
         {
             try
             {
-                var subscriptions = await marketplaceClient.Fulfillment.ListSubscriptionsAsync(cancellationToken: cancellationToken).ToListAsync();
+                var subscriptions = await this.marketplaceClient.Fulfillment.ListSubscriptionsAsync(cancellationToken: cancellationToken).ToListAsync();
 
                 var subscriptionsViewModel = subscriptions.Select(SubscriptionViewModel.FromSubscription)
                     .Where(s => s.State != SubscriptionStatusEnum.Unsubscribed || this.options.ShowUnsubscribed);
@@ -106,7 +107,7 @@ namespace CommandCenter.Controllers
 
                 foreach (var task in taskList)
                 {
-                    var subscription = await task.ConfigureAwait(false);
+                    var subscription = await task;
                     newViewModel.Add(subscription);
                 }
 
@@ -114,7 +115,7 @@ namespace CommandCenter.Controllers
             }
             catch (Exception ex)
             {
-                this.ModelState.AddModelError(string.Empty, "Something went wrong, please check logs!");
+                this.ModelState.AddModelError(string.Empty, $"Something went wrong, please check logs, but here some details {ex.ToString()}");
                 return this.View(new List<SubscriptionViewModel>());
             }
         }
@@ -139,10 +140,10 @@ namespace CommandCenter.Controllers
         public async Task<IActionResult> Operations(Guid subscriptionId, CancellationToken cancellationToken)
         {
             var subscriptionOperations =
-                await this.operationsStore.GetAllSubscriptionRecordsAsync(subscriptionId, cancellationToken).ConfigureAwait(false);
+                await this.operationsStore.GetAllSubscriptionRecordsAsync(subscriptionId, cancellationToken);
 
             var subscription =
-                (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(subscriptionId, null, null, cancellationToken).ConfigureAwait(false)).Value;
+                (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(subscriptionId, null, null, cancellationToken)).Value;
 
             var operations = new List<Operation>();
 
@@ -154,7 +155,7 @@ namespace CommandCenter.Controllers
                         operation.OperationId,
                         null,
                         null,
-                        cancellationToken).ConfigureAwait(false));
+                        cancellationToken));
             }
 
             return this.View(new OperationsViewModel
@@ -175,7 +176,7 @@ namespace CommandCenter.Controllers
         public async Task<IActionResult> SubscriptionDimensionUsage(Guid subscriptionId, bool showErrorMessage, CancellationToken cancellationToken)
         {
             var subscription =
-                (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(subscriptionId, null, null, cancellationToken).ConfigureAwait(false)).Value;
+                (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(subscriptionId, null, null, cancellationToken)).Value;
 
             var dimensionEventViewModel = new DimensionEventViewModel()
             {
@@ -186,7 +187,7 @@ namespace CommandCenter.Controllers
                 SubscriptionDimensions = this.options.Dimensions
                                                 .Where(dim => dim.PlanIds.Contains(subscription.PlanId) && dim.OfferIds.Contains(subscription.OfferId))
                                                 .Select(dim => dim.DimensionId).ToList(),
-                PastUsageEvents = await this.dimensionUsageStore.GetAllDimensionRecordsAsync(subscriptionId, cancellationToken).ConfigureAwait(false),
+                PastUsageEvents = await this.dimensionUsageStore.GetAllDimensionRecordsAsync(subscriptionId, cancellationToken),
             };
 
             if (showErrorMessage)
@@ -220,7 +221,7 @@ namespace CommandCenter.Controllers
                 EffectiveStartTime = model.EventTime,
             };
 
-            var updateResult = (await this.meteringClient.Metering.PostUsageEventAsync(usage, null, null, cancellationToken).ConfigureAwait(false)).Value;
+            var updateResult = (await this.meteringClient.Metering.PostUsageEventAsync(usage, null, null, cancellationToken)).Value;
             DimensionUsageRecord dimRecord = new DimensionUsageRecord(usage.ResourceId?.ToString(), DateTime.Now.ToString("o"));
 
             bool errorMessage = true;
@@ -244,7 +245,7 @@ namespace CommandCenter.Controllers
                 dimRecord.PlanId = usage.PlanId;
             }
 
-            await this.dimensionUsageStore.RecordAsync(model.SubscriptionId, dimRecord, cancellationToken).ConfigureAwait(false);
+            await this.dimensionUsageStore.RecordAsync(model.SubscriptionId, dimRecord, cancellationToken);
 
             return this.RedirectToAction("SubscriptionDimensionUsage", new { model.SubscriptionId, errorMessage });
         }
@@ -271,19 +272,19 @@ namespace CommandCenter.Controllers
                         subscriptionId,
                         null,
                         null,
-                        cancellationToken).ConfigureAwait(false)).Value;
+                        cancellationToken)).Value;
 
                     var subscription = (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(
                         subscriptionId,
                         null,
                         null,
-                        cancellationToken).ConfigureAwait(false)).Value;
+                        cancellationToken)).Value;
 
                     var pendingOperations = (await this.marketplaceClient.Operations.ListOperationsAsync(
                         subscriptionId,
                         null,
                         null,
-                        cancellationToken).ConfigureAwait(false)).Value;
+                        cancellationToken)).Value;
 
                     var updateSubscriptionViewModel = new UpdateSubscriptionViewModel
                     {
@@ -305,7 +306,7 @@ namespace CommandCenter.Controllers
                         subscriptionId,
                         null,
                         null,
-                        cancellationToken).ConfigureAwait(false);
+                        cancellationToken);
 
                     return this.RedirectToAction("Index");
 
@@ -336,7 +337,7 @@ namespace CommandCenter.Controllers
                 model.SubscriptionId,
                 null,
                 null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
 
             if (pendingOperations.Value.Operations.Any(o => o.Status == OperationStatusEnum.InProgress))
             {
@@ -348,9 +349,9 @@ namespace CommandCenter.Controllers
                 new SubscriberPlan { PlanId = model.NewPlan },
                 null,
                 null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
 
-            await this.operationsStore.RecordAsync(model.SubscriptionId, Guid.Parse(updateResult), cancellationToken).ConfigureAwait(false);
+            await this.operationsStore.RecordAsync(model.SubscriptionId, Guid.Parse(updateResult), cancellationToken);
 
             return this.RedirectToAction("Index");
         }
@@ -360,11 +361,11 @@ namespace CommandCenter.Controllers
             var recordedSubscriptionOperations =
                     await this.operationsStore.GetAllSubscriptionRecordsAsync(
                         subscription.SubscriptionId,
-                        cancellationToken).ConfigureAwait(false);
+                        cancellationToken);
 
             subscription.ExistingOperations = (await this.operationsStore.GetAllSubscriptionRecordsAsync(
                 subscription.SubscriptionId,
-                cancellationToken).ConfigureAwait(false)).Any();
+                cancellationToken)).Any();
             subscription.OperationCount = recordedSubscriptionOperations.Count();
 
             if (this.options.EnableDimensionMeterReporting)

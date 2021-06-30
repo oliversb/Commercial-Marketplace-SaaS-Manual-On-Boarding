@@ -66,7 +66,7 @@ namespace CommandCenter.AzureQueues
 
             await this.SendWebhookNotificationMessageAsync(
                 payload,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -77,7 +77,7 @@ namespace CommandCenter.AzureQueues
                 throw new ArgumentNullException(nameof(provisionModel));
             }
 
-            await this.SendLandingPageMessageAsync(provisionModel, MailLinkControllerName, "Update", cancellationToken).ConfigureAwait(false);
+            await this.SendLandingPageMessageAsync(provisionModel, MailLinkControllerName, "Update", cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -90,7 +90,7 @@ namespace CommandCenter.AzureQueues
 
             await this.SendWebhookNotificationMessageAsync(
                 payload,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -101,7 +101,7 @@ namespace CommandCenter.AzureQueues
                 throw new ArgumentNullException(nameof(provisionModel));
             }
 
-            await this.SendLandingPageMessageAsync(provisionModel, MailLinkControllerName, "Activate", cancellationToken).ConfigureAwait(false);
+            await this.SendLandingPageMessageAsync(provisionModel, MailLinkControllerName, "Activate", cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -114,7 +114,7 @@ namespace CommandCenter.AzureQueues
 
             await this.SendWebhookNotificationMessageAsync(
                 payload,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -127,7 +127,7 @@ namespace CommandCenter.AzureQueues
 
             await this.SendWebhookNotificationMessageAsync(
                 payload,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -140,7 +140,7 @@ namespace CommandCenter.AzureQueues
 
             await this.SendWebhookNotificationMessageAsync(
                 payload,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -153,7 +153,7 @@ namespace CommandCenter.AzureQueues
 
             await this.SendWebhookNotificationMessageAsync(
                 payload,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
         }
 
         private async Task SendLandingPageMessageAsync(AzureSubscriptionProvisionModel provisionModel, string controllerName, string actionName, CancellationToken cancellationToken)
@@ -173,7 +173,7 @@ namespace CommandCenter.AzureQueues
 
             var message = $"{{\"ActionLink\": \"{this.BuildLink(queryParams, controllerName, actionName)}\", \"Payload\" : {JsonConvert.SerializeObject(provisionModel)} }}";
 
-            await this.queueClient.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
+            await this.queueClient.SendMessageAsync(message, cancellationToken);
         }
 
         private async Task SendWebhookNotificationMessageAsync(WebhookPayload message, CancellationToken cancellationToken)
@@ -183,7 +183,7 @@ namespace CommandCenter.AzureQueues
                 throw new ArgumentNullException(nameof(message));
             }
 
-            await this.queueClient.SendMessageAsync(JsonConvert.SerializeObject(message), cancellationToken).ConfigureAwait(false);
+            await this.queueClient.SendMessageAsync(JsonConvert.SerializeObject(message), cancellationToken);
         }
 
         private string BuildLink(List<Tuple<string, string>> queryParams, string controllerName, string controllerAction)

@@ -48,7 +48,7 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(notificationModel));
             }
 
-            var subscriptionDetails = (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(notificationModel.SubscriptionId, null, null, cancellationToken).ConfigureAwait(false)).Value;
+            var subscriptionDetails = (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(notificationModel.SubscriptionId, null, null, cancellationToken)).Value;
 
             if (subscriptionDetails.SaasSubscriptionStatus != Microsoft.Marketplace.SaaS.Models.SubscriptionStatusEnum.PendingFulfillmentStart)
             {
@@ -61,7 +61,7 @@ namespace CommandCenter.Controllers
                     });
             }
 
-            await this.marketplaceProcessor.ActivateSubscriptionAsync(notificationModel.SubscriptionId, notificationModel.PlanId, cancellationToken).ConfigureAwait(false);
+            await this.marketplaceProcessor.ActivateSubscriptionAsync(notificationModel.SubscriptionId, notificationModel.PlanId, cancellationToken);
 
             return this.View(
                 new ActivateActionViewModel
@@ -88,7 +88,7 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(notificationModel));
             }
 
-            await this.OperationAckAsync(notificationModel, cancellationToken).ConfigureAwait(false);
+            await this.OperationAckAsync(notificationModel, cancellationToken);
 
             return this.View("OperationUpdate", notificationModel);
         }
@@ -109,7 +109,7 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(notificationModel));
             }
 
-            await this.OperationAckAsync(notificationModel, cancellationToken).ConfigureAwait(false);
+            await this.OperationAckAsync(notificationModel, cancellationToken);
 
             return this.View("OperationUpdate", notificationModel);
         }
@@ -130,7 +130,7 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(notificationModel));
             }
 
-            await this.OperationAckAsync(notificationModel, cancellationToken).ConfigureAwait(false);
+            await this.OperationAckAsync(notificationModel, cancellationToken);
 
             return this.View("OperationUpdate", notificationModel);
         }
@@ -151,7 +151,7 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(notificationModel));
             }
 
-            await this.OperationAckAsync(notificationModel, cancellationToken).ConfigureAwait(false);
+            await this.OperationAckAsync(notificationModel, cancellationToken);
 
             return this.View("OperationUpdate", notificationModel);
         }
@@ -175,7 +175,7 @@ namespace CommandCenter.Controllers
                 new Microsoft.Marketplace.SaaS.Models.SubscriberPlan { PlanId = notificationModel.PlanId },
                 null,
                 null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
 
             return this.View(
                 new ActivateActionViewModel
@@ -189,7 +189,7 @@ namespace CommandCenter.Controllers
             NotificationModel payload,
             CancellationToken cancellationToken)
         {
-            await this.marketplaceProcessor.OperationAckAsync(payload.SubscriptionId, payload.OperationId, payload.PlanId, payload.Quantity, cancellationToken).ConfigureAwait(false);
+            await this.marketplaceProcessor.OperationAckAsync(payload.SubscriptionId, payload.OperationId, payload.PlanId, payload.Quantity, cancellationToken);
         }
     }
 }

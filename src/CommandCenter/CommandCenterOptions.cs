@@ -5,7 +5,7 @@ namespace CommandCenter
 {
     using System;
     using System.Collections.Generic;
-    using CommandCenter.Mail;
+    using CommandCenter.Metering;
 
     /// <summary>
     /// Options for the command center.
@@ -23,11 +23,6 @@ namespace CommandCenter
         public string CommandCenterAdmin { get; set; }
 
         /// <summary>
-        /// Gets or sets command center's email options.
-        /// </summary>
-        public MailOptions Mail { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether unsubcribed subscriptions are shown.
         /// </summary>
         public bool ShowUnsubscribed { get; set; }
@@ -42,8 +37,8 @@ namespace CommandCenter
         /// </summary>
         public AzureQueueOptions AzureQueue { get; set; }
 
-         /// <summary>
-        /// Gets or sets the UseMeteredDimensions.
+        /// <summary>
+        /// Gets or sets a value indicating whether meter reporting is enabled.
         /// </summary>
         public bool EnableDimensionMeterReporting { get; set; }
 
@@ -51,10 +46,5 @@ namespace CommandCenter
         /// Gets or sets the Dimensions.
         /// </summary>
         public List<Dimension> Dimensions { get; set; }
-
-        /// <summary>
-        /// Gets or sets the active notification handler.
-        /// </summary>
-        public NotificationHandlerEnum ActiveNotificationHandler { get; set; }
     }
 }

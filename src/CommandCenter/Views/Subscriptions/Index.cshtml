@@ -2,132 +2,157 @@
 @using CommandCenter.Models
 @model IEnumerable<CommandCenter.Models.SubscriptionViewModel>
 @{
-    ViewData["Title"] = "All Offer Subscriptions";
+    ViewData["Title"] = "Subscriptions";
 }
-<div class="container-fluid">
-    <h1>Subscriptions for all of the offers</h1>
-    <br />
+<div class="container">
+    <div class="row">
+        <h1 class="mb-3">Subscriptions</h1>
         <span class="text-danger">@Html.ValidationSummary(false)</span>
-        <span class="anchor">Status filter: </span>
-        <div class="d-inline-block">
-            @foreach (var status in Enum.GetNames(typeof(SubscriptionStatusEnum)))
-            {
+    </div>
 
-                <input type="checkbox" class="statusCheckbox" id="@status" checked/> @status
-            }
+    <div class="row">
+        <div class="col-12">
+            <form class="mb-4">
+                <fieldset class="border" id="stateFiltersFieldSet">
+                    <legend style="float:none; width: auto !important;" class="m-2 px-2 fs-5" id="stateFiltersFieldSetLegend">State filter</legend>
+
+                    @foreach (var status in Enum.GetNames(typeof(SubscriptionStatusEnum)))
+                    {
+                        <div class="form-check form-switch form-check-inline m-3">
+                            <input class="form-check-input statusCheckbox" type="checkbox" id="@status" checked>
+                            <label class="form-check-label" for="@status">@status</label>
+                        </div>
+                    }
+
+                </fieldset>
+            </form>
         </div>
-    <table class="table table-sm w-auto text-xsmall">
-        <thead class="thead-dark">
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.SubscriptionName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.State)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.OfferId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PlanId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PurchaserEmail)
-                </th>
+    </div>
 
-                <th>
-                    @Html.DisplayNameFor(model => model.PurchaserTenantId)
-                </th>
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive-sm">
+                <table class="table table-sm w-auto text-xsmall" id="subscriptions">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.SubscriptionName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.State)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.OfferId)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.PlanId)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.BeneficiaryEmail)
+                            </th>
 
-                <th>
-                    @Html.DisplayNameFor(model => model.Quantity)
-                </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.BeneficiaryTenantId)
+                            </th>
 
-                <th>
-                    @Html.DisplayNameFor(model => model.SubscriptionId)
-                </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Quantity)
+                            </th>
 
-                <th>Actions</th>
-                <th>Pending operations</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr class="@item.State">
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SubscriptionName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.State)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.OfferId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PlanId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PurchaserEmail)
-                    </td>
+                            <th>
+                                @Html.DisplayNameFor(model => model.SubscriptionId)
+                            </th>
 
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PurchaserTenantId)
-                    </td>
-
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Quantity)
-                    </td>
-
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SubscriptionId)
-                    </td>
-
-                    <td>
-                        <ul class="list-inline">
-                            @if (!item.PendingOperations)
-                            {
-                                @foreach (var a in item.NextActions)
-                                {
-                                    <li>
-                                        <span> @Html.ActionLink(Enum.GetName(typeof(ActionsEnum), a), "SubscriptionAction", new { subscriptionAction = a, subscriptionId = item.SubscriptionId }, new {@class = "list-inline-item" }) </span>
-                                    </li>
-                                }
-                            }
-                            else
-                            {
-                                <li>Pending operations</li>
-                            }
-                            @if (item.IsDimensionEnabled && item.State != SubscriptionStatusEnum.PendingFulfillmentStart)
-                            {
-                                <li> @Html.ActionLink("SendDimensionUsage", "SubscriptionDimensionUsage", new { item.SubscriptionId }) </li>
-                            }
-                        </ul>
-                    </td>
-                    <td>
-                        @if (item.ExistingOperations)
+                            <th>Actions</th>
+                            <th>Pending operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
                         {
-                            @Html.ActionLink("Operations", "Operations", new { item.SubscriptionId })
+                            <tr class="@item.State">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SubscriptionName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.State)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OfferId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PlanId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BeneficiaryEmail)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BeneficiaryTenantId)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SubscriptionId)
+                                </td>
+
+                                <td>
+                                    <ul class="list-inline">
+                                        @if (!item.PendingOperations)
+                                        {
+                                            @foreach (var a in item.NextActions)
+                                            {
+                                                <li>
+                                                    <span> @Html.ActionLink(Enum.GetName(typeof(ActionsEnum), a), "SubscriptionAction", new { subscriptionAction = a, subscriptionId = item.SubscriptionId }, new { @class = "list-inline-item" }) </span>
+                                                </li>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <li>Pending operations</li>
+                                        }
+                                        @if (item.IsDimensionEnabled && item.State != SubscriptionStatusEnum.PendingFulfillmentStart)
+                                        {
+                                            <li> @Html.ActionLink("SendDimensionUsage", "SubscriptionDimensionUsage", new { item.SubscriptionId }) </li>
+                                        }
+                                    </ul>
+                                </td>
+                                <td>
+                                    @if (item.ExistingOperations)
+                                    {
+                                        @Html.ActionLink("Operations", "Operations", new { item.SubscriptionId })
+                                    }
+
+                                </td>
+                            </tr>
                         }
-                        
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 </div>
 
-<script src="~/lib/jquery/dist/jquery.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".statusCheckbox").change(function () {
-            if (this.checked) {
-                $("tr." + this.id).show();
-            }
-            else {
-                $("tr." + this.id).hide();
-            }
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".statusCheckbox").change(function () {
+                if (this.checked) {
+                    $("tr." + this.id).show();
+                }
+                else {
+                    $("tr." + this.id).hide();
+                }
+            });
+            $("#subscriptions tr.Subscribed").addClass("table-success");
+            $("#subscriptions tr.PendingFulfillmentStart").addClass("table-info");
+            $("#subscriptions tr.Unsubscribed").addClass("table-secondary");
         });
-    });
-</script>
+    </script>
+}

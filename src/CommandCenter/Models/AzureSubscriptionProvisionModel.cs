@@ -32,13 +32,14 @@ namespace CommandCenter.Models
         /// <summary>
         ///  Gets or sets email.
         /// </summary>
-        public string Email { get; set; }
+        [Display(Name = "Preferred user name")]
+        public string EmailFromClaims { get; set; }
 
         /// <summary>
         /// Gets or sets full name.
         /// </summary>
-        [Display(Name = "Subscriber full name")]
-        public string FullName { get; set; }
+        [Display(Name = "Name")]
+        public string NameFromOpenIdConnect { get; set; }
 
         /// <summary>
         /// Gets or sets new plan ID.
@@ -89,13 +90,49 @@ namespace CommandCenter.Models
         /// <summary>
         /// Gets or sets the purchaser email.
         /// </summary>
-        [Display(Name = "Purchaser email")]
-        public string PurchaserEmail { get; set; }
+        [Display(Name = "Purchaser user principal name from marketplace API")]
+        public string PurchaserUPN { get; set; }
 
         /// <summary>
         /// Gets or sets the purchaser tenant ID.
         /// </summary>
         [Display(Name = "Purchaser AAD TenantId")]
         public Guid PurchaserTenantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the beneficiary email.
+        /// </summary>
+        [Display(Name = "Beneficiary user principal name from marketplace API")]
+        public string BeneficiaryUPN { get; set; }
+
+        /// <summary>
+        /// Gets or sets the beneficiary tenant ID.
+        /// </summary>
+        [Display(Name = "Beneficiary AAD TenantId")]
+        public Guid BeneficiaryTenantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email address received from the Graph API.
+        /// </summary>
+        [Display(Name = "Purchaser email")]
+        public string EmailFromGraph { get;  set; }
+
+        /// <summary>
+        /// Gets or sets the purchaser name received from the Graph API.
+        /// </summary>
+        [Display(Name = "Purchaser name")]
+        public string NameFromGraph { get;  set; }
+
+        /// <summary>
+        /// Gets or sets the user principal name received from the Graph API.
+        /// </summary>
+        [Display(Name = "User Principal Name")]
+        public string UserPrincipalName { get;  set; }
+
+        /// <summary>
+        /// Gets or sets the purchaser email.
+        /// </summary>
+        [Display(Name = "Purchaser Email")]
+        public string PurchaserEmail { get; set; }
     }
 }

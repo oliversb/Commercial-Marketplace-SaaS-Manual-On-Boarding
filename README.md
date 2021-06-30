@@ -46,7 +46,6 @@ In the sections below you will find:
     - [Registering Azure Active Directory Applications](#registering-azure-active-directory-applications)
       - [Creating a New Directory](#creating-a-new-directory)
       - [Registering the Apps](#registering-the-apps)
-    - [Creating and Configuring a SendGrid Account when using email notifications](#creating-and-configuring-a-sendgrid-account-when-using-email-notifications)
     - [Creating a Storage Account](#creating-a-storage-account)
     - [Change the Configuration Settings](#change-the-configuration-settings)
     - [Create an Offer on Commercial Marketplace Portal in Partner Center](#create-an-offer-on-commercial-marketplace-portal-in-partner-center)
@@ -219,11 +218,10 @@ partner center requirements. The rest of the integration is done via notificatio
 The landing page can also used for adding new fields to gather more information
 from the subscriber; for example: what is the favored region. When a subscriber
 provides the details on the landing page, the solution generates a notification to the
-configured operations contact. The sample has both the email and Azure storage queue notification implementation. The operations team then provisions the required
+configured operations contact. The sample implements a mechanism for Azure storage queue notifications. The operations team then provisions the required
 resources, on-boards the customer using their internal processes, and then comes
-back to the generated notification and clicks on the link to activate the
+back to the generated notification and accesses the URL to activate the
 subscription.
-
 
 
 Please see my overview for the integration points in
@@ -373,14 +371,6 @@ registering two applications:
 
    ![A screenshot of a computer Description automatically generated](./ReadmeFiles/AdAppRegistration.png)
 
-### Creating and Configuring a SendGrid Account when using email notifications
-
-Follow the steps in the
-[tutorial](https://docs.microsoft.com/en-us/azure/sendgrid-dotnet-how-to-send-email),
-and grab an API Key. Set the value of the ApiKey in the configuration section,
-"CommandCenter:Mail", either using the user-secrets method or in the
-`appconfig.json` file.
-
 ### Creating a Storage Account
 
 Create an Azure Storage account following the steps
@@ -403,6 +393,7 @@ You will need to replace the values marked as `CHANGE`, either by editing the
 | AzureAd:Domain                                    | Change      | You can find this value on the "Overview" page of the Active Directory you have registered your applications in. If you are not using a custom domain, it is in the format of \<tenant name\>.onmicrosoft.com |
 | AzureAd:TenantId                                  | Keep        | Common authentication endpoint, since this is a multi-tenant app                                                                                                                                              |
 | AzureAd:ClientId                                  | Change      | Copy the clientId of the multi-tenant app from its "Overview" page                                                                                                                                            |
+| AzureAd:ClientSecret                              | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                   |
 | AzureAd:CallbackPath                              | Keep        | Default oidc sign in path                                                                                                                                                                                     |
 | AzureAd:SignedOutCallbackPath                     | Keep        | Default sign out path                                                                                                                                                                                         |
 | MarketplaceClient:ClientId                        | Change      | Copy the clientId of the single-tenant app from its "Overview" page. This AD app is for calling the Fulfillment API                                                                                           |
@@ -412,14 +403,10 @@ You will need to replace the values marked as `CHANGE`, either by editing the
 | WebHookTokenParameters:TenantId                   | Change      | Set the same value as MarketplaceClient:TenantId                                                                                                                                                              |
 | WebHookTokenParameters:ClientId                   | Change      | Set the same value as MarketplaceClient:ClientId                                                                                                                                                              |
 | CommandCenter:OperationsStoreConnectionString     | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [Client library documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store) |
-| CommandCenter:Mail:OperationsTeamEmail            | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. The sample sends emails to this address.                                                                                                 |
-| CommandCenter:Mail:FromEmail                      | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. Sendgrid requires a "from" email address when sending emails.                                                                            |
-| CommandCenter:Mail:ApiKey                         | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. Sendgrid API key.                                                                                                                        |
 | CommandCenter:CommandCenterAdmin                  | Change      | Change it to the email address you are logging on to the dashboard. Only the users with the domain name of this email is authorized to use the dashboard to display the subscriptions.                        |
 | CommandCenter:ShowUnsubscribed                    | Change      | Change true or false, depending on if you want to see the subscriptions that are not active.                                                                                                                  |
-| CommandCenter:ActiveNotificationHandler           | Change      | Active notification handler the solution uses. It can be EmailNotifications or AzureQueueNotifications.                                                                                                       |
-| CommandCenter:AzureQueue:StorageConnectionString  | Change      | Use this section if ActiveNotificationHandler is AzureQueueNotifications. Add the storage account connection string for the queue.                                                                            |
-| CommandCenter:AzureQueue:QueueName                | Change      | Use this section if ActiveNotificationHandler is AzureQueueNotifications. Name of the queue the messages will go to.                                                                                          |
+| CommandCenter:AzureQueue:StorageConnectionString  | Change      | Add the storage account connection string for the queue.                                                                            |
+| CommandCenter:AzureQueue:QueueName                | Change      | Name of the queue the messages will go to.                                                                                          |
 | CommandCenter:EnableDimensionMeterReporting       | Change      | Use this section to enable manually sending usage events on a dimension for a customer subscription through this App. Default: false, change to true if there is at least one dimension enabled on an Offer-Plan and would like to trigger usage events manually. [More information on Marketplace Metering Service dimensions.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/saas-metered-billing)                                     |
 | CommandCenter:Dimensions:DimensionId              | Change      | Use this section if the above EnableDimensionMeterReporting setting is true. Add DimensionId of the enabled custom meter.                                                                                          |
 | CommandCenter:Dimensions:PlanIds                  | Change      | Use this section if the above EnableDimensionMeterReporting setting is true. Add PlanId's of the plans for which the above DimensionId is enabled.                                                                |
@@ -661,7 +648,7 @@ Customer searches for the offer on Azure Portal
 
    ![purchaser8](./ReadmeFiles/Purchaser8.png)
 
-9. Purchaser submits the form, and Contoso ops team receives an email
+9. Purchaser submits the form, and Contoso ops team receives a notification
 
    ![purchaser9](./ReadmeFiles/Purchaser9.png)
 

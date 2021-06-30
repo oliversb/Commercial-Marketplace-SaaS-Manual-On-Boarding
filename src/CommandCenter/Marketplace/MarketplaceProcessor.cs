@@ -46,7 +46,7 @@ namespace CommandCenter.Marketplace
                 new SubscriberPlan { PlanId = planId },
                 null,
                 null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
 
             this.logger.LogInformation($"Activated subscription {subscriptionId} with plan {planId}");
         }
@@ -61,7 +61,7 @@ namespace CommandCenter.Marketplace
 
             try
             {
-                var resolvedSubscription = await this.marketplaceClient.Fulfillment.ResolveAsync(token, null, null, cancellationToken).ConfigureAwait(false);
+                var resolvedSubscription = await this.marketplaceClient.Fulfillment.ResolveAsync(token, null, null, cancellationToken);
 
                 if (resolvedSubscription != default)
                 {
@@ -88,7 +88,7 @@ namespace CommandCenter.Marketplace
                     new UpdateOperation { PlanId = planId, Quantity = quantity, Status = UpdateOperationStatusEnum.Success },
                     null,
                     null,
-                    cancellationToken).ConfigureAwait(false);
+                    cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -105,7 +105,7 @@ namespace CommandCenter.Marketplace
                 payload.OperationId,
                 null,
                 null,
-                cancellationToken).ConfigureAwait(false);
+                cancellationToken);
 
             if (operationDetails == null)
             {
@@ -119,23 +119,23 @@ namespace CommandCenter.Marketplace
             switch (payload.Action)
             {
                 case WebhookAction.Unsubscribe:
-                    await this.webhookHandler.UnsubscribedAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.UnsubscribedAsync(payload);
                     break;
 
                 case WebhookAction.ChangePlan:
-                    await this.webhookHandler.ChangePlanAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.ChangePlanAsync(payload);
                     break;
 
                 case WebhookAction.ChangeQuantity:
-                    await this.webhookHandler.ChangeQuantityAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.ChangeQuantityAsync(payload);
                     break;
 
                 case WebhookAction.Suspend:
-                    await this.webhookHandler.SuspendedAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.SuspendedAsync(payload);
                     break;
 
                 case WebhookAction.Reinstate:
-                    await this.webhookHandler.ReinstatedAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.ReinstatedAsync(payload);
                     break;
 
                 case WebhookAction.Transfer:
