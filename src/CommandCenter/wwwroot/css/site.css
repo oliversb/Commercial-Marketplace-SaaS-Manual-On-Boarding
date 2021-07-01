@@ -53,12 +53,3 @@ body {
 [class*="span"] { background: #EEF; }
 
 [class*="span"] [class*="span"] { background: #FEE; }
-
-
-tr.Subscribed { background: lightgreen; }
-
-tr.PendingFulfillmentStart { background: lightsalmon; }
-
-tr.PendingFulfillmentStart { background: lightsalmon; }
-
-tr.Unsubscribed { background: lightgray; }

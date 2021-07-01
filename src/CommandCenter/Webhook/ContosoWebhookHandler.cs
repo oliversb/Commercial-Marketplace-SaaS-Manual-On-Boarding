@@ -4,6 +4,7 @@
 namespace CommandCenter.Webhook
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using CommandCenter.Marketplace;
     using Microsoft.Marketplace.SaaS;
@@ -33,84 +34,49 @@ namespace CommandCenter.Webhook
         /// <inheritdoc/>
         public async Task ChangePlanAsync(WebhookPayload payload)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (payload.Status == OperationStatusEnum.Succeeded)
-            {
-                await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
-                        payload.SubscriptionId,
-                        payload.OperationId,
-                        new UpdateOperation { PlanId = payload.PlanId, Status = UpdateOperationStatusEnum.Success }).ConfigureAwait(false);
-            }
-            else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-            {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
-            }
+            await this.NotifyAndAck(
+                payload,
+                new UpdateOperation { PlanId = payload.PlanId, Status = UpdateOperationStatusEnum.Success },
+                this.notificationHelper.NotifyChangePlanAsync);
         }
 
         /// <inheritdoc/>
         public async Task ChangeQuantityAsync(WebhookPayload payload)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (payload.Status == OperationStatusEnum.Succeeded)
-            {
-                await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
-                        payload.SubscriptionId,
-                        payload.OperationId,
-                        new UpdateOperation { Quantity = payload.Quantity, Status = UpdateOperationStatusEnum.Success }).ConfigureAwait(false);
-            }
-            else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-            {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
-            }
+            await this.NotifyAndAck(
+                payload,
+                new UpdateOperation { Quantity = payload.Quantity, Status = UpdateOperationStatusEnum.Success },
+                this.notificationHelper.NotifyChangeQuantityAsync);
         }
 
         /// <inheritdoc/>
         public async Task ReinstatedAsync(WebhookPayload payload)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (payload.Status == OperationStatusEnum.Succeeded)
-            {
-                await this.notificationHelper.NotifyReinstatedAsync(payload).ConfigureAwait(false);
-            }
-            else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-            {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
-            }
+            await this.NotifyAndAck(
+                payload,
+                new UpdateOperation { Status = UpdateOperationStatusEnum.Success },
+                this.notificationHelper.NotifyReinstatedAsync);
         }
 
         /// <inheritdoc/>
         public async Task SuspendedAsync(WebhookPayload payload)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (payload.Status == OperationStatusEnum.Succeeded)
-            {
-                await this.notificationHelper.NotifySuspendedAsync(payload)
-                    .ConfigureAwait(false);
-            }
-            else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-            {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
-            }
+            await this.NotifyAndAck(
+                payload,
+                new UpdateOperation { Status = UpdateOperationStatusEnum.Success },
+                this.notificationHelper.NotifySuspendedAsync);
         }
 
         /// <inheritdoc/>
         public async Task UnsubscribedAsync(WebhookPayload payload)
+        {
+            await this.NotifyAndAck(
+                payload,
+                new UpdateOperation { Status = UpdateOperationStatusEnum.Success },
+                this.notificationHelper.NotifyUnsubscribedAsync);
+        }
+
+        private async Task NotifyAndAck(WebhookPayload payload, UpdateOperation updateOperation, Func<WebhookPayload, CancellationToken, Task> notify)
         {
             if (payload == null)
             {
@@ -119,11 +85,15 @@ namespace CommandCenter.Webhook
 
             if (payload.Status == OperationStatusEnum.Succeeded)
             {
-                await this.notificationHelper.NotifyUnsubscribedAsync(payload).ConfigureAwait(false);
+                await notify(payload, CancellationToken.None);
+                await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
+                        payload.SubscriptionId,
+                        payload.OperationId,
+                        updateOperation);
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload);
             }
         }
     }

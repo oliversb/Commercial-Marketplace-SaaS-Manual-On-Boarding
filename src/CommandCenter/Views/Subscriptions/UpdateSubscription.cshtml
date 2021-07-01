@@ -1,6 +1,6 @@
 ﻿@model CommandCenter.Models.UpdateSubscriptionViewModel
 @{
-    ViewData["Title"] = "All Offer Subscriptions";
+    ViewData["Title"] = "Subscription details";
 }
 
 <h1>Update Subscriptions</h1>
@@ -11,41 +11,37 @@
 
 <form asp-action="UpdateSubscription">
     <div>
-        <dl class="row">
-            <dt class="col-sm-2">
+        <div class="row">
+            <div class="col-sm-2">
                 @Html.DisplayNameFor(model => model.SubscriptionName)
-            </dt>
-            <dd class="col-sm-10">
+            </div>
+            <div class="col-sm-10">
                 @Html.DisplayFor(model => model.SubscriptionName)
-            </dd>
-            <dt class="col-sm-2">
+            </div>
+            <div class="col-sm-2">
                 @Html.DisplayNameFor(model => model.SubscriptionId)
-            </dt>
-            <dd class="col-sm-10">
+            </div>
+            <div class="col-sm-10">
                 @Html.DisplayFor(model => model.SubscriptionId)
                 <input asp-for="SubscriptionId" type="hidden" class="form-control" />
-            </dd>
+            </div>
 
-            <dt class="col-sm-2">
+            <div class="col-sm-2">
                 @Html.DisplayNameFor(model => model.CurrentPlan)
-            </dt>
-            <dd class="col-sm-10">
+            </div>
+            <div class="col-sm-10">
                 @Html.DisplayFor(model => model.CurrentPlan)
-            </dd>
+            </div>
 
-            <dt class="col-sm-2">
+            <div class="col-sm-2">
                 @Html.DisplayNameFor(model => model.AvailablePlans)
-            </dt>
-            <dd class="col-sm-10">
-                <select asp-for="NewPlan" asp-items="@(new SelectList(Model.AvailablePlans, "PlanId", "DisplayName"))" class="form-control">
-                    <option value="">Choose a new plan</option>
-                </select>
-            </dd>
-        </dl>
+            </div>
+            <div class="col-sm-10">
+                @Html.DropDownListFor(model => model.AvailablePlans, new SelectList(Model.AvailablePlans, "PlanId", "DisplayName"), "Choose a new plan")
+            </div>
+        </div>
     </div>
     <div>
-        <input type="submit"
-               value="Submit"
-               class="btn btn-primary" />
+        <button type="submit" class="btn btn-primary btn-block m-3">Submit</button>
     </div>
 </form>

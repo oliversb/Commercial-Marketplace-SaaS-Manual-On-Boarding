@@ -3,13 +3,15 @@
 
 namespace CommandCenter
 {
+    using System.Threading.Tasks;
+    using Azure.Identity;
     using CommandCenter.Authorization;
     using CommandCenter.AzureQueues;
-    using CommandCenter.Mail;
+    using CommandCenter.DimensionUsageStore;
     using CommandCenter.Marketplace;
+    using CommandCenter.Metering;
     using CommandCenter.OperationsStore;
     using CommandCenter.Webhook;
-
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -23,12 +25,9 @@ namespace CommandCenter
     using Microsoft.Extensions.Hosting;
     using Microsoft.Identity.Web;
     using Microsoft.Identity.Web.UI;
-    using Microsoft.Marketplace.SaaS;
-    using System.Threading.Tasks;
-    using Serilog;
     using Microsoft.Marketplace.Metering;
-    using CommandCenter.DimensionUsageStore;
-    using Azure.Identity;
+    using Microsoft.Marketplace.SaaS;
+    using Serilog;
 
     /// <summary>
     /// ASP.NET core startup class.
@@ -103,14 +102,19 @@ namespace CommandCenter
                 JwtBearerDefaults.AuthenticationScheme,
                 options =>
                 {
-                    // Need to override the ValidAudience, since the incoming token has the app ID as the aud claim. 
+                    // Need to override the ValidAudience, since the incoming token has the app ID as the aud claim.
                     // Library expects it to be api://<appId> format.
-                                        options.TokenValidationParameters.ValidAudience = this.configuration["WebHookTokenParameters:ClientId"];
+                    options.TokenValidationParameters.ValidAudience = this.configuration["WebHookTokenParameters:ClientId"];
                     options.TokenValidationParameters.ValidIssuer = $"https://sts.windows.net/{this.configuration["WebHookTokenParameters:TenantId"]}/";
                 });
 
-            // Enable AAD sign on on the landing page.
-            services.AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd");
+            // Enable AAD sign on on the landing page and Graph API calling capabilities
+            services
+                .AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd") // Sign on with AAD
+                .EnableTokenAcquisitionToCallDownstreamApi(new string[] { "user.read" }) // Call Graph API
+                    .AddMicrosoftGraph() // Use defaults with Graph V1
+                    .AddInMemoryTokenCaches(); // Add token caching
+
             services.Configure<OpenIdConnectOptions>(options =>
             {
                 options.Events.OnSignedOutCallbackRedirect = (context) =>
@@ -158,18 +162,7 @@ namespace CommandCenter
             services.TryAddScoped<IWebhookHandler, ContosoWebhookHandler>();
             services.TryAddScoped<IMarketplaceProcessor, MarketplaceProcessor>();
 
-            var notificationHandler = this.configuration.GetSection("CommandCenter").Get<CommandCenterOptions>().ActiveNotificationHandler;
-
-            if (notificationHandler == NotificationHandlerEnum.EmailNotifications)
-            {
-                // It is email in this sample, but you can plug in anything that implements the interface and communicate with an existing API.
-                // In the email case, the existing API is the SendGrid API...
-                services.TryAddScoped<IMarketplaceNotificationHandler, CommandCenterEMailHelper>();
-            }
-            else
-            {
-                services.TryAddScoped<IMarketplaceNotificationHandler, AzureQueueNotificationHandler>();
-            }
+            services.TryAddScoped<IMarketplaceNotificationHandler, AzureQueueNotificationHandler>();
 
             services.AddAuthorization(
                 options => options.AddPolicy(
@@ -186,10 +179,11 @@ namespace CommandCenter
 
             services.AddSingleton<IAuthorizationHandler, CommandCenterAdminHandler>();
 
-            services.AddControllersWithViews();
+            services.AddRazorPages();
 
-            services.AddRazorPages()
-                 .AddMicrosoftIdentityUI();
+            services
+                .AddControllersWithViews()
+                .AddMicrosoftIdentityUI();
         }
     }
 }

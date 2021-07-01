@@ -49,7 +49,7 @@ namespace CommandCenter.OperationsStore
                     query,
                     (key, rowKey, timestamp, properties, etag) => new OperationRecord(key, rowKey),
                     token,
-                    cancellationToken).ConfigureAwait(false);
+                    cancellationToken);
 
                 result.AddRange(segment.Results.Select(r => r));
 
@@ -68,13 +68,13 @@ namespace CommandCenter.OperationsStore
         {
             var table = this.tableClient.GetTableReference(TableName);
 
-            await this.InitTable(cancellationToken).ConfigureAwait(false);
+            await this.InitTable(cancellationToken);
 
             var entity = new OperationRecord(subscriptionId.ToString(), operationId.ToString());
 
             var tableOperation = TableOperation.InsertOrMerge(entity);
 
-            await table.ExecuteAsync(tableOperation, cancellationToken).ConfigureAwait(false);
+            await table.ExecuteAsync(tableOperation, cancellationToken);
         }
 
         private async Task InitTable(CancellationToken cancellationToken = default)
@@ -83,7 +83,7 @@ namespace CommandCenter.OperationsStore
             {
                 var table = this.tableClient.GetTableReference(TableName);
 
-                await table.CreateIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
+                await table.CreateIfNotExistsAsync(cancellationToken);
                 this.tableInitialized = true;
             }
         }

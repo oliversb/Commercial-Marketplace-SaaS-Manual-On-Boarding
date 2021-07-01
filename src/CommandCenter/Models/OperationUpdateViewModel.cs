@@ -3,6 +3,7 @@
 
 namespace CommandCenter.Models
 {
+    using System.ComponentModel.DataAnnotations;
     using CommandCenter.Marketplace;
 
     /// <summary>
@@ -13,11 +14,13 @@ namespace CommandCenter.Models
         /// <summary>
         /// Gets or sets operation type.
         /// </summary>
+        [Display(Name = "Operation type")]
         public string OperationType { get; set; }
 
         /// <summary>
         /// Gets or sets webhook payload.
         /// </summary>
+        [Display(Name = "Payload")]
         public WebhookPayload Payload { get; set; }
     }
 }

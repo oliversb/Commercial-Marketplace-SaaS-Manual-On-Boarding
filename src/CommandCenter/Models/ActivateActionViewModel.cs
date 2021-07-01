@@ -4,6 +4,7 @@
 namespace CommandCenter.Models
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
 
     /// <summary>
     /// Activate action view model.
@@ -13,12 +14,19 @@ namespace CommandCenter.Models
         /// <summary>
         /// Gets or sets plan ID.
         /// </summary>
+        [Display(Name = "Plan ID")]
         public string PlanId { get; set; }
 
         /// <summary>
         /// Gets or sets subscription ID.
         /// </summary>
+        [Display(Name = "Subscription ID")]
         public Guid SubscriptionId { get; set; }
+
+        /// <summary>
+        /// Gets message.
+        /// </summary>
+        [Display(Name = "Message")]
         public string Message { get; internal set; }
     }
 }

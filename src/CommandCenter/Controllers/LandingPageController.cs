@@ -16,21 +16,23 @@ namespace CommandCenter.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Microsoft.Graph;
+    using Microsoft.Identity.Web;
     using Microsoft.Marketplace.SaaS;
     using Microsoft.Marketplace.SaaS.Models;
 
     /// <summary>
     /// Landing page.
     /// </summary>
-    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
-    // Specify the auth scheme to be used for logging on users. This is for supporting WebAPI auth
-    
+    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)] // Specify the auth scheme to be used for logging on users. This is for supporting WebAPI auth
     public class LandingPageController : Controller
     {
+        private const string SampleToken = "sampletoken";
         private readonly ILogger<LandingPageController> logger;
         private readonly IMarketplaceProcessor marketplaceProcessor;
         private readonly IMarketplaceNotificationHandler notificationHandler;
         private readonly IMarketplaceSaaSClient marketplaceClient;
+        private readonly GraphServiceClient graphServiceClient;
         private readonly CommandCenterOptions options;
 
         /// <summary>
@@ -40,12 +42,14 @@ namespace CommandCenter.Controllers
         /// <param name="marketplaceProcessor">Marketplace processor.</param>
         /// <param name="notificationHandler">Notification handler.</param>
         /// <param name="marketplaceClient">Marketplace client.</param>
+        /// <param name="graphServiceClient">Client for Graph API.</param>
         /// <param name="logger">Logger.</param>
         public LandingPageController(
             IOptionsMonitor<CommandCenterOptions> commandCenterOptions,
             IMarketplaceProcessor marketplaceProcessor,
             IMarketplaceNotificationHandler notificationHandler,
             IMarketplaceSaaSClient marketplaceClient,
+            GraphServiceClient graphServiceClient,
             ILogger<LandingPageController> logger)
         {
             if (commandCenterOptions == null)
@@ -56,6 +60,7 @@ namespace CommandCenter.Controllers
             this.marketplaceProcessor = marketplaceProcessor;
             this.notificationHandler = notificationHandler;
             this.marketplaceClient = marketplaceClient;
+            this.graphServiceClient = graphServiceClient;
             this.logger = logger;
             this.options = commandCenterOptions.CurrentValue;
         }
@@ -66,6 +71,7 @@ namespace CommandCenter.Controllers
         /// <param name="token">Marketplace purchase identification token.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Action result.</returns>
+        [AuthorizeForScopes(Scopes = new string[] { "user.read" })]
         public async Task<ActionResult> Index(string token, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(token))
@@ -75,59 +81,79 @@ namespace CommandCenter.Controllers
                 return this.View();
             }
 
-            // Get the subscription for the offer from the marketplace purchase identification token
-            var resolvedSubscription = await this.marketplaceProcessor.GetSubscriptionFromPurchaseIdentificationTokenAsync(token, cancellationToken).ConfigureAwait(false);
+            ResolvedSubscription resolvedSubscription = null;
+            Microsoft.Marketplace.SaaS.Models.Subscription subscriptionDetails = null;
+            Azure.Response<Microsoft.Marketplace.SaaS.Models.SubscriptionPlans> availablePlans = null;
+            bool anyPendingOperations = false;
 
-            // Rest is implementation detail. In this sample, we chose allow the subscriber to change the plan for an activated subscriptio
-            if (resolvedSubscription == default(ResolvedSubscription))
+            if (token.ToLowerInvariant() != SampleToken)
             {
-                this.ViewBag.Message = "Token did not resolve to a subscription";
-                return this.View();
+                // Get the subscription for the offer from the marketplace purchase identification token
+                resolvedSubscription = await this.marketplaceProcessor.GetSubscriptionFromPurchaseIdentificationTokenAsync(token, cancellationToken);
+
+                if (resolvedSubscription == default(ResolvedSubscription))
+                {
+                    this.ViewBag.Message = "Token did not resolve to a subscription";
+                    return this.View();
+                }
+
+                subscriptionDetails = resolvedSubscription.Subscription;
+
+                // Populate the available plans for this subscription from the API
+                availablePlans = await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(
+                    resolvedSubscription.Id.Value,
+                    null,
+                    null,
+                    cancellationToken);
+
+                // See if there are pending operations for this subscription
+                var pendingOperations = await this.marketplaceClient.Operations.ListOperationsAsync(
+                    resolvedSubscription.Id.Value,
+                    null,
+                    null,
+                    cancellationToken);
+                anyPendingOperations = pendingOperations?.Value.Operations?.Any(o => o.Status == OperationStatusEnum.InProgress) ?? false;
             }
 
-            // resolvedSubscription.Subscription is null when calling mock endpoint
-            var existingSubscription = resolvedSubscription.Subscription;
+            var graphApiUser = await this.graphServiceClient.Me.Request().GetAsync();
 
-            var availablePlans = await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(
-                resolvedSubscription.Id.Value,
-                null,
-                null,
-                cancellationToken).ConfigureAwait(false);
-
-            var pendingOperations = await this.marketplaceClient.Operations.ListOperationsAsync(
-                resolvedSubscription.Id.Value,
-                null,
-                null,
-                cancellationToken).ConfigureAwait(false);
+            var isSampleToken = string.Equals(token, SampleToken, StringComparison.InvariantCultureIgnoreCase);
 
             var provisioningModel = new AzureSubscriptionProvisionModel
             {
-                PlanId = resolvedSubscription.PlanId,
-                SubscriptionId = resolvedSubscription.Id.Value,
-                OfferId = resolvedSubscription.OfferId,
-                SubscriptionName = resolvedSubscription.SubscriptionName,
-                PurchaserEmail = existingSubscription?.Purchaser?.EmailId,
-                PurchaserTenantId = existingSubscription?.Purchaser?.TenantId ?? Guid.Empty,
+                // Landing page is the only place to capture the customer's contact details
+                // It can be present in multiple places:
+                //  - the details received from the Graph API
+                //  - beneficiary information on the subscription details
+                // it is also possible that the Graph API
+                NameFromOpenIdConnect = (this.User.Identity as ClaimsIdentity)?.FindFirst("name")?.Value,
+                EmailFromClaims = this.User.Identity.GetUserEmail(),
+                EmailFromGraph = graphApiUser.Mail ?? string.Empty,
+                NameFromGraph = graphApiUser.DisplayName ?? string.Empty,
+                UserPrincipalName = graphApiUser.UserPrincipalName ?? string.Empty,
+                PurchaserEmail = graphApiUser.Mail ?? string.Empty,
 
-                // Assuming this will be set to the value the customer already set when subscribing, if we are here after the initial subscription activation
-                // Landing page is used both for initial provisioning and configuration of the subscription.
+                // Get the other potential contact information from the marketplace API
+                PurchaserUPN = isSampleToken ? "purchaser@purchaser.com" : subscriptionDetails?.Purchaser?.EmailId,
+                PurchaserTenantId = isSampleToken ? Guid.Empty : subscriptionDetails?.Purchaser?.TenantId ?? Guid.Empty,
+                BeneficiaryUPN = isSampleToken ? "customer@customer.com" : subscriptionDetails?.Beneficiary?.EmailId,
+                BeneficiaryTenantId = isSampleToken ? Guid.Empty : subscriptionDetails?.Beneficiary?.TenantId ?? Guid.Empty,
+
+                // Maybe the end users are a completely different set of contacts, start with one
+                BusinessUnitContactEmail = this.User.Identity.GetUserEmail(),
+
+                PlanId = isSampleToken ? "purchaser@purchaser.com" : resolvedSubscription.PlanId,
+                SubscriptionId = isSampleToken ? Guid.Empty : resolvedSubscription.Id.Value,
+                OfferId = isSampleToken ? "sample offer" : resolvedSubscription.OfferId,
+                SubscriptionName = isSampleToken ? "sample subscription" : resolvedSubscription.SubscriptionName,
+                SubscriptionStatus = isSampleToken ? SubscriptionStatusEnum.PendingFulfillmentStart : subscriptionDetails?.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
+
                 Region = TargetContosoRegionEnum.NorthAmerica,
-                AvailablePlans = availablePlans?.Value.Plans.ToList(),
-                SubscriptionStatus = existingSubscription?.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
-                PendingOperations = pendingOperations?.Value.Operations?.Any(o => o.Status == OperationStatusEnum.InProgress) ?? false,
+                AvailablePlans = isSampleToken ? new System.Collections.Generic.List<Plan>() : availablePlans?.Value.Plans.ToList(),
+                PendingOperations = isSampleToken ? false : anyPendingOperations,
             };
 
-            if (provisioningModel != default)
-            {
-                provisioningModel.FullName = (this.User.Identity as ClaimsIdentity)?.FindFirst("name")?.Value;
-                provisioningModel.Email = this.User.Identity.GetUserEmail();
-                provisioningModel.BusinessUnitContactEmail = this.User.Identity.GetUserEmail();
-
-                return this.View(provisioningModel);
-            }
-
-            this.ModelState.AddModelError(string.Empty, "Cannot resolve subscription");
-            return this.View();
+            return this.View(provisioningModel);
         }
 
         /// <summary>
@@ -152,11 +178,11 @@ namespace CommandCenter.Controllers
                 // A new subscription will have PendingFulfillmentStart as status
                 if (provisionModel.SubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                 {
-                    await this.notificationHandler.ProcessNewSubscriptionAsyc(provisionModel, cancellationToken).ConfigureAwait(false);
+                    await this.notificationHandler.ProcessNewSubscriptionAsyc(provisionModel, cancellationToken);
                 }
                 else
                 {
-                    await this.notificationHandler.ProcessChangePlanAsync(provisionModel, cancellationToken).ConfigureAwait(false);
+                    await this.notificationHandler.ProcessChangePlanAsync(provisionModel, cancellationToken);
                 }
 
                 return this.RedirectToAction(nameof(this.Success));

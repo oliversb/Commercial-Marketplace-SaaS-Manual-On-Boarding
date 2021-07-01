@@ -42,12 +42,12 @@ namespace CommandCenter.Models
         /// <summary>
         ///  Gets or sets purchaser tenant ID.
         /// </summary>
-        public Guid PurchaserTenantId { get; set; }
+        public Guid BeneficiaryTenantId { get; set; }
 
         /// <summary>
         /// Gets or sets purchaser email.
         /// </summary>
-        public string PurchaserEmail { get; set; }
+        public string BeneficiaryEmail { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether there are existing operations.
@@ -84,8 +84,8 @@ namespace CommandCenter.Models
                 OfferId = marketplaceSubscription.OfferId,
                 State = marketplaceSubscription.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
                 SubscriptionName = marketplaceSubscription.Name,
-                PurchaserEmail = marketplaceSubscription.Purchaser.EmailId,
-                PurchaserTenantId = marketplaceSubscription.Purchaser.TenantId ?? Guid.Empty,
+                BeneficiaryEmail = marketplaceSubscription.Beneficiary.EmailId,
+                BeneficiaryTenantId = marketplaceSubscription.Beneficiary.TenantId ?? Guid.Empty,
             };
         }
     }

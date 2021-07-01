@@ -5,19 +5,13 @@
             <span class="navbar-text text-dark" style="margin-right: 50px">Hello @User.Identity.Name!</span>
         </li>
         <li class="nav-item">
-            <button type="button" class="btn btn-warning" style="border-bottom-width: 0px; border-top-width: 0px; padding-bottom: 0px; padding-top: 0px;">
-                <a class="nav-link text-dark btn btn-warning" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
-
-            </button>
-
-
-
+                <a class="btn btn-primary" role="button" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
         </li>
     }
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark btn" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
+            <a class="nav-link btn btn-primary" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
         </li>
     }
 </ul>
