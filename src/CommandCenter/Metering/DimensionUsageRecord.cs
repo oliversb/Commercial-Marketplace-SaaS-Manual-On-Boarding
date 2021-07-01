@@ -18,8 +18,8 @@ namespace CommandCenter.Metering
         /// <param name="sentDateTime">Sent Datetime as the row key.</param>
         public DimensionUsageRecord(string subscriptionId, string sentDateTime)
         {
-            PartitionKey = subscriptionId;
-            RowKey = sentDateTime;
+            this.PartitionKey = subscriptionId;
+            this.RowKey = sentDateTime;
         }
 
         /// <summary>

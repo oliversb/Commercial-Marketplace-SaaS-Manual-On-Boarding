@@ -4,7 +4,6 @@
 namespace CommandCenter.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
@@ -28,13 +27,13 @@ namespace CommandCenter.Controllers
     [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)] // Specify the auth scheme to be used for logging on users. This is for supporting WebAPI auth
     public class LandingPageController : Controller
     {
+        private const string SampleToken = "sampletoken";
         private readonly ILogger<LandingPageController> logger;
         private readonly IMarketplaceProcessor marketplaceProcessor;
         private readonly IMarketplaceNotificationHandler notificationHandler;
         private readonly IMarketplaceSaaSClient marketplaceClient;
         private readonly GraphServiceClient graphServiceClient;
         private readonly CommandCenterOptions options;
-        private const string SampleToken = "sampletoken";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LandingPageController"/> class.

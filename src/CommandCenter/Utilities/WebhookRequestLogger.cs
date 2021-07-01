@@ -27,8 +27,8 @@ namespace CommandCenter.Utilities
         public WebhookRequestLogger(RequestDelegate next, ILoggerFactory loggerFactory)
         {
             this.next = next;
-            logger = loggerFactory.CreateLogger<WebhookRequestLogger>();
-            memoryStreamManager = new RecyclableMemoryStreamManager();
+            this.logger = loggerFactory.CreateLogger<WebhookRequestLogger>();
+            this.memoryStreamManager = new RecyclableMemoryStreamManager();
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace CommandCenter.Utilities
                 context.Request.Body.Position = 0;
                 context.Request.Body.Seek(0, SeekOrigin.Begin);
 
-                logger.LogInformation($"Webhook raw request {ReadStream(requestStreamCopy)}");
+                this.logger.LogInformation($"Webhook raw request {ReadStream(requestStreamCopy)}");
             }
         }
 
