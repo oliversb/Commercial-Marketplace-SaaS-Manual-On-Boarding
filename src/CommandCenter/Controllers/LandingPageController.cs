@@ -34,6 +34,7 @@ namespace CommandCenter.Controllers
         private readonly IMarketplaceSaaSClient marketplaceClient;
         private readonly GraphServiceClient graphServiceClient;
         private readonly CommandCenterOptions options;
+        private const string SampleToken = "sampletoken";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LandingPageController"/> class.
@@ -86,7 +87,7 @@ namespace CommandCenter.Controllers
             Azure.Response<Microsoft.Marketplace.SaaS.Models.SubscriptionPlans> availablePlans = null;
             bool anyPendingOperations = false;
 
-            if (token.ToLowerInvariant() != "sampletoken")
+            if (token.ToLowerInvariant() != SampleToken)
             {
                 // Get the subscription for the offer from the marketplace purchase identification token
                 resolvedSubscription = await this.marketplaceProcessor.GetSubscriptionFromPurchaseIdentificationTokenAsync(token, cancellationToken);
@@ -117,6 +118,8 @@ namespace CommandCenter.Controllers
 
             var graphApiUser = await this.graphServiceClient.Me.Request().GetAsync();
 
+            var isSampleToken = string.Equals(token, SampleToken, StringComparison.InvariantCultureIgnoreCase);
+
             var provisioningModel = new AzureSubscriptionProvisionModel
             {
                 // Landing page is the only place to capture the customer's contact details
@@ -132,23 +135,23 @@ namespace CommandCenter.Controllers
                 PurchaserEmail = graphApiUser.Mail ?? string.Empty,
 
                 // Get the other potential contact information from the marketplace API
-                PurchaserUPN = token.ToLowerInvariant() == "sampletoken" ? "purchaser@purchaser.com" : subscriptionDetails?.Purchaser?.EmailId,
-                PurchaserTenantId = token.ToLowerInvariant() == "sampletoken" ? Guid.Empty : subscriptionDetails?.Purchaser?.TenantId ?? Guid.Empty,
-                BeneficiaryUPN = token.ToLowerInvariant() == "sampletoken" ? "customer@customer.com" : subscriptionDetails?.Beneficiary?.EmailId,
-                BeneficiaryTenantId = token.ToLowerInvariant() == "sampletoken" ? Guid.Empty : subscriptionDetails?.Beneficiary?.TenantId ?? Guid.Empty,
+                PurchaserUPN = isSampleToken ? "purchaser@purchaser.com" : subscriptionDetails?.Purchaser?.EmailId,
+                PurchaserTenantId = isSampleToken ? Guid.Empty : subscriptionDetails?.Purchaser?.TenantId ?? Guid.Empty,
+                BeneficiaryUPN = isSampleToken ? "customer@customer.com" : subscriptionDetails?.Beneficiary?.EmailId,
+                BeneficiaryTenantId = isSampleToken ? Guid.Empty : subscriptionDetails?.Beneficiary?.TenantId ?? Guid.Empty,
 
                 // Maybe the end users are a completely different set of contacts, start with one
                 BusinessUnitContactEmail = this.User.Identity.GetUserEmail(),
 
-                PlanId = token.ToLowerInvariant() == "sampletoken" ? "purchaser@purchaser.com" : resolvedSubscription.PlanId,
-                SubscriptionId = token.ToLowerInvariant() == "sampletoken" ? Guid.Empty : resolvedSubscription.Id.Value,
-                OfferId = token.ToLowerInvariant() == "sampletoken" ? "sample offer" : resolvedSubscription.OfferId,
-                SubscriptionName = token.ToLowerInvariant() == "sampletoken" ? "sample subscription" : resolvedSubscription.SubscriptionName,
-                SubscriptionStatus = token.ToLowerInvariant() == "sampletoken" ? SubscriptionStatusEnum.PendingFulfillmentStart : subscriptionDetails?.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
+                PlanId = isSampleToken ? "purchaser@purchaser.com" : resolvedSubscription.PlanId,
+                SubscriptionId = isSampleToken ? Guid.Empty : resolvedSubscription.Id.Value,
+                OfferId = isSampleToken ? "sample offer" : resolvedSubscription.OfferId,
+                SubscriptionName = isSampleToken ? "sample subscription" : resolvedSubscription.SubscriptionName,
+                SubscriptionStatus = isSampleToken ? SubscriptionStatusEnum.PendingFulfillmentStart : subscriptionDetails?.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
 
                 Region = TargetContosoRegionEnum.NorthAmerica,
-                AvailablePlans = token.ToLowerInvariant() == "sampletoken" ? new System.Collections.Generic.List<Plan>() : availablePlans?.Value.Plans.ToList(),
-                PendingOperations = token.ToLowerInvariant() == "sampletoken" ? false : anyPendingOperations,
+                AvailablePlans = isSampleToken ? new System.Collections.Generic.List<Plan>() : availablePlans?.Value.Plans.ToList(),
+                PendingOperations = isSampleToken ? false : anyPendingOperations,
             };
 
             return this.View(provisioningModel);

@@ -4,7 +4,6 @@
 namespace CommandCenter.Authorization
 {
     using System;
-    using System.Diagnostics;
     using System.Threading.Tasks;
     using CommandCenter.Utilities;
     using Microsoft.AspNetCore.Authorization;

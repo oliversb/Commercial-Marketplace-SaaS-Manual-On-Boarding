@@ -32,7 +32,7 @@ namespace CommandCenter.Metering
         /// <inheritdoc/>
         public async Task<IEnumerable<DimensionUsageRecord>> GetAllDimensionRecordsAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
         {
-            var table = tableClient.GetTableReference(TableName);
+            var table = this.tableClient.GetTableReference(TableName);
             var result = new List<DimensionUsageRecord>();
 
             if (!table.Exists())
@@ -74,9 +74,9 @@ namespace CommandCenter.Metering
             DimensionUsageRecord result,
             CancellationToken cancellationToken = default)
         {
-            var table = tableClient.GetTableReference(TableName);
+            var table = this.tableClient.GetTableReference(TableName);
 
-            await InitTable(cancellationToken);
+            await this.InitTable(cancellationToken);
 
             var tableOperation = TableOperation.InsertOrMerge(result);
 
@@ -85,12 +85,12 @@ namespace CommandCenter.Metering
 
         private async Task InitTable(CancellationToken cancellationToken = default)
         {
-            if (!tableInitialized)
+            if (!this.tableInitialized)
             {
-                var table = tableClient.GetTableReference(TableName);
+                var table = this.tableClient.GetTableReference(TableName);
 
                 await table.CreateIfNotExistsAsync(cancellationToken);
-                tableInitialized = true;
+                this.tableInitialized = true;
             }
         }
     }
