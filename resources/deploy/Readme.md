@@ -1,12 +1,28 @@
-## There are three options to quickly deploy this code in your azure account.
+## Deploying the solution to an Azure subscription
+
+You can use one of the options below to deploy the solution
+1- If you already have Azure Active Directory (AAD) app registrations
+2- Use a local script to create AAD app registrations and deploy the solution
 
 ### Option 1
 
 Please use this option, if you already have app registrations created and would like to create an App Service, Storage account and Deploy the code to App Service.
 
-![Deploy to Azure](https://aka.ms/deploytoazurebutton)
+The template uses the following parameters:
 
-[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsanthoshb-msft%2FCommercial-Marketplace-SaaS-Manual-On-Boarding%2Fmain%2Fresources%2Fdeploy%2FmainTemplate.json)
+| Parameter                         | Note                                                                                                                                     |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Web App Name                      | The DNS subdomain of the WebApp                                                                                                          |
+| Web App Admin                     | The account name for the admin console, corresponding to CommandCenter:CommandCenterAdmin app setting                                    |
+| App Service Plan Sku              | The SKU of App Service Plan                                                                                                              |
+| Login App Reg Domain Name         | Domain name from the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:Domain app setting                      |
+| Login App Reg Client Id           | Client ID for the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:AzureAd:ClientId app setting               |
+| Login App Reg Client Secret       | Client secret for the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:ClientSecret app setting               |
+| Fulfillment App Reg Tenant Id     | Tenant ID for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:TenantId app setting         |
+| Fulfillment App Reg Client Id     | App ID for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:ClientId app setting            |
+| Fulfillment App Reg Client Secret | Client secret for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:ClientSecret app setting |
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FCommercial-Marketplace-SaaS-Manual-On-Boarding%2Fdev%2Fresources%2Fdeploy%2FdeployWithExistingAADApps.json)
 
 ### Option 2
 

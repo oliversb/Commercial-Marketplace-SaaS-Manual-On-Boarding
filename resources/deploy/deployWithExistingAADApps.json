@@ -1,0 +1,170 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppName": {
+      "defaultValue": "marketplace",
+      "minLength": 2,
+      "type": "String",
+      "metadata": { "description": "DNS subdomain of the WebApp" }
+    },
+    "webAppAdmin": {
+      "type": "string",
+      "metadata": {
+        "description": "The account name for the admin console, corresponding to CommandCenter:CommandCenterAdmin app setting"
+      }
+    },
+    "appServicePlanSku": {
+      "defaultValue": "F1",
+      "type": "String",
+      "metadata": { "description": "The SKU of App Service Plan" }
+    },
+    "loginAppRegDomainName": {
+      "type": "String",
+      "metadata": {
+        "description": "Domain name from the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:Domain app setting"
+      }
+    },
+    "loginAppRegClientId": {
+      "type": "String",
+      "metadata": {
+        "description": "Client ID for the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:AzureAd:ClientId app setting"
+      }
+    },
+    "loginAppRegClientSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Client secret for the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:ClientSecret app setting"
+      }
+    },
+    "fulfillmentAppRegTenantId": {
+      "type": "String",
+      "metadata": {
+        "description": "Tenant ID for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:TenantId app setting"
+      }
+    },
+    "fulfillmentAppRegClientId": {
+      "type": "String",
+      "metadata": {
+        "description": "App ID for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:ClientId app setting"
+      }
+    },
+    "fulfillmentAppRegClientSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Client secret for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:ClientSecret app setting"
+      }
+    }
+  },
+  "variables": {
+    "appServiceName": "[parameters('webAppName')]",
+    "appServicePlanName": "[concat(parameters('webAppName'), '-plan')]",
+    "storageAccountName": "[concat(parameters('webAppName'), 'store')]",
+    "gitRepoUrl": "https://github.com/microsoft/Commercial-Marketplace-SaaS-Manual-On-Boarding",
+    "location": "[resourceGroup().location]",
+    "storageAccountType": "Standard_LRS"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[resourceGroup().location]",
+      "tags": { "displayName": "storageAccount" },
+      "sku": { "name": "[variables('storageAccountType')]" }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2020-06-01",
+      "name": "[variables('appServicePlanName')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "sku": { "name": "[parameters('appServicePlanSku')]" }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2020-06-01",
+      "name": "[variables('appServiceName')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      ],
+      "properties": {
+        "siteConfig": {
+          "netFrameworkVersion": "v5.0",
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+          "appSettings": [
+            {
+              "name": "AzureAd:Domain",
+              "value": "[parameters('LoginAppRegDomainName')]"
+            },
+            {
+              "name": "AzureAd:ClientId",
+              "value": "[parameters('loginAppRegClientId')]"
+            },
+            {
+              "name": "AzureAd:ClientSecret",
+              "value": "[parameters('loginAppRegClientSecret')]"
+            },
+            {
+              "name": "MarketplaceClient:TenantId",
+              "value": "[parameters('fulfillmentAppRegTenantId')]"
+            },
+            {
+              "name": "MarketplaceClient:ClientId",
+              "value": "[parameters('fulfillmentAppRegClientId')]"
+            },
+            {
+              "name": "MarketplaceClient:ClientSecret",
+              "value": "[parameters('fulfillmentAppRegClientSecret')]"
+            },
+            {
+              "name": "WebHookTokenParameters:TenantId",
+              "value": "[parameters('fulfillmentAppRegTenantId')]"
+            },
+            {
+              "name": "WebHookTokenParameters:ClientId",
+              "value": "[parameters('fulfillmentAppRegClientId')]"
+            },
+            {
+              "name": "CommandCenter:CommandCenterAdmin",
+              "value": "[parameters('WebAppAdmin')]"
+            },
+            {
+              "name": "CommandCenter:OperationsStoreConnectionString",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name,'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value,';EndpointSuffix=core.windows.net')]"
+            },
+            {
+              "name": "CommandCenter:AzureQueue:StorageConnectionString",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name,'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value,';EndpointSuffix=core.windows.net')]"
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "type": "sourcecontrols",
+          "apiVersion": "2020-06-01",
+          "name": "web",
+          "location": "[variables('location')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('appServiceName'))]"
+          ],
+          "properties": {
+            "repoUrl": "[variables('gitRepoUrl')]",
+            "branch": "main",
+            "isManualIntegration": true
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "ApplicationURL": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Web/sites', variables('appServiceName')), '2018-02-01').defaultHostName]"
+    }
+  }
+}
