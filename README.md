@@ -4,7 +4,7 @@
 
 # Microsoft commercial marketplace SaaS offers sample - Manual on-boarding of customers
 
-<!-- 
+<!--
 Guidelines on README format: https://review.docs.microsoft.com/help/onboard/admin/samples/concepts/readme-template?branch=master
 
 Guidance on onboarding samples to docs.microsoft.com/samples: https://review.docs.microsoft.com/help/onboard/admin/samples/process/onboarding?branch=master
@@ -27,20 +27,25 @@ The sample requires .NET 5.\*.\*, and an Azure Storage account.
 ## Table of contents
 
 In the sections below you will find:
+
 - [Microsoft commercial marketplace SaaS offers sample - Manual on-boarding of customers](#microsoft-commercial-marketplace-saas-offers-sample---manual-on-boarding-of-customers)
   - [Prerequisites](#prerequisites)
   - [Table of contents](#table-of-contents)
-  - [Integrating a software as a service with commercial marketplace](#integrating-a-software-as-a-service-with-commercial-marketplace)
-    - [Landing page](#landing-page)
-      - [Azure AD Requirement: Multi-Tenant Application Registration](#azure-ad-requirement-multi-tenant-application-registration)
-    - [Webhook endpoint](#webhook-endpoint)
-    - [Marketplace REST API interactions](#marketplace-rest-api-interactions)
-      - [Azure AD Requirement: Single-Tenant Registration](#azure-ad-requirement-single-tenant-registration)
-    - [Activating a Subscription](#activating-a-subscription)
-  - [Scenario for the Sample](#scenario-for-the-sample)
-    - [Architecture Overview and Process Flow of the Solution](#architecture-overview-and-process-flow-of-the-solution)
-    - [Walking-through the Scenario Subscription Process](#walking-through-the-scenario-subscription-process)
-  - [Running the Sample](#running-the-sample)
+- [Integrating a software as a service solution with commercial marketplace](#integrating-a-software-as-a-service-solution-with-commercial-marketplace)
+  - [Landing page](#landing-page)
+    - [Azure AD Requirement: Multi-Tenant Application Registration](#azure-ad-requirement-multi-tenant-application-registration)
+  - [Webhook endpoint](#webhook-endpoint)
+  - [Marketplace REST API interactions](#marketplace-rest-api-interactions)
+    - [Azure AD Requirement: Single-Tenant Registration](#azure-ad-requirement-single-tenant-registration)
+  - [Activating a Subscription](#activating-a-subscription)
+- [Scenario for the Sample](#scenario-for-the-sample)
+  - [Architecture Overview and Process Flow of the Solution](#architecture-overview-and-process-flow-of-the-solution)
+  - [Walking-through the Scenario Subscription Process](#walking-through-the-scenario-subscription-process)
+- [Running the Sample](#running-the-sample)
+  - [Quick deployment](#quick-deployment)
+    - [Option 1](#option-1)
+    - [Option 2](#option-2)
+  - [Detailed deployment steps](#detailed-deployment-steps)
     - [Creating a web application on Azure App Service and deploying the sample with Visual Studio](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio)
     - [Creating a web application on Azure App Service and deploying the sample with Visual Studio Code](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio-code)
     - [Registering Azure Active Directory Applications](#registering-azure-active-directory-applications)
@@ -48,7 +53,7 @@ In the sections below you will find:
       - [Registering the Apps](#registering-the-apps)
     - [Creating a Storage Account](#creating-a-storage-account)
     - [Change the Configuration Settings](#change-the-configuration-settings)
-    - [Create an Offer on Commercial Marketplace Portal in Partner Center](#create-an-offer-on-commercial-marketplace-portal-in-partner-center)
+  - [Create an Offer on Commercial Marketplace Portal in Partner Center](#create-an-offer-on-commercial-marketplace-portal-in-partner-center)
     - [Example Offer Setup in Commercial Marketplace Portal](#example-offer-setup-in-commercial-marketplace-portal)
       - [Offer Setup](#offer-setup)
       - [Properties](#properties)
@@ -61,11 +66,10 @@ In the sections below you will find:
       - [Review and Publish](#review-and-publish)
   - [Signing Up for Your Offer](#signing-up-for-your-offer)
 
-
 Let's first start with mentioning how to integrate a SaaS solution with Azure
 Marketplace.
 
-## Integrating a software as a service with commercial marketplace
+# Integrating a software as a service solution with commercial marketplace
 
 Many different types of solution offers are available on Microsoft commercial marketplace for
 the customers to subscribe. Those different types include options such as
@@ -101,7 +105,7 @@ Marketplace and the SaaS solution,
 
 ![overview](./ReadmeFiles/IntegrationOverview.png)
 
-### Landing page
+## Landing page
 
 On this page, the subscriber provides additional details to the publisher so the
 publisher can provision required resources for the new subscription. A publisher
@@ -116,7 +120,7 @@ protected by AAD, such as Microsoft Graph API, Azure Management API, etc.
 > to an offer to make changes to his/her subscription, such as upgrading,
 > downgrading, or any other changes to the subscription from Azure portal.
 
-#### Azure AD Requirement: Multi-Tenant Application Registration
+### Azure AD Requirement: Multi-Tenant Application Registration
 
 This page should authenticate a subscriber through Azure Active Directory (AAD)
 using the
@@ -124,7 +128,7 @@ using the
 flow. The publisher should register a multi-tenant AAD application for the
 landing page.
 
-### Webhook endpoint
+## Webhook endpoint
 
 The commercial marketplace calls this endpoint to notify the solution for the events
 happening on the marketplace side. Those events can be the cancellation or
@@ -136,7 +140,7 @@ Marketplace.
 > **:warning: IMPORTANT:** This endpoint is not protected. The implementation
 > should call the marketplace REST API to ensure the validity of the event. This endpoint also receives a JWT token. You can validate the token against AAD, and check the audience to make sure this call is addressed to you. Please see the startup.cs file to see the implementation.
 
-### Marketplace REST API interactions
+## Marketplace REST API interactions
 
 The _Fulfillment API_ is documented
 [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)
@@ -144,7 +148,7 @@ for subscription integration, and the usage based _Metered Billing API_
 documentation is
 [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis).
 
-#### Azure AD Requirement: Single-Tenant Registration
+### Azure AD Requirement: Single-Tenant Registration
 
 The publisher should register an AAD application and provide the `AppID`
 (ClientId) and the `Tenant ID` (AAD directory where the app is registered)
@@ -154,9 +158,9 @@ The solution is put on an [access control list](https://docs.microsoft.com/en-us
 those details. A client must use [client credentials grant to get a token](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow#get-a-token).
 
 > **:warning: Important:**
-> The marketplace fulfillment API V2.0's resource ID is ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7```.
+> The marketplace fulfillment API V2.0's resource ID is `20e940b3-4c77-4b0b-9a53-9e16a1b010a7`.
 
-If you are using the V1 end point for AAD, use the value ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7``` for the resource parameter. If you are using AAD V2 endpoint (recommended), use ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default``` for value of the scope parameter.
+If you are using the V1 end point for AAD, use the value `20e940b3-4c77-4b0b-9a53-9e16a1b010a7` for the resource parameter. If you are using AAD V2 endpoint (recommended), use `20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default` for value of the scope parameter.
 
 Please note the different requirements for the Azure AD interaction for the
 landing page and calling the APIs. I recommend two separate AAD applications,
@@ -168,7 +172,7 @@ Azure Management API, or any other API that is protected by Azure AD on the
 landing page, and separate the security for accessing the marketplace API from
 this interaction as good practice. The certification policy requires the use of "User.Read" for signing on the user, and [incremental consent](https://docs.microsoft.com/en-us/azure/active-directory/azuread-dev/azure-ad-endpoint-comparison#incremental-and-dynamic-consent) pattern should you need to request other permissions.
 
-### Activating a Subscription
+## Activating a Subscription
 
 Let's go through the steps of activating a subscription to an offer.
 
@@ -204,7 +208,7 @@ Let's go through the steps of activating a subscription to an offer.
 10. Further API calls are made, again using the access token obtained from the
     Azure AD, in this case to activate the subscription.
 
-## Scenario for the Sample
+# Scenario for the Sample
 
 This sample can be a good starting point, assuming the solution does not have
 requirements of providing a native experience for cancelling or updating a
@@ -223,11 +227,10 @@ resources, on-boards the customer using their internal processes, and then comes
 back to the generated notification and accesses the URL to activate the
 subscription.
 
-
 Please see my overview for the integration points in
 [Integrating a software as a service with Microsoft commercial marketplace](#integrating-a-software-as-a-solution-with-azure-marketplace).
 
-### Architecture Overview and Process Flow of the Solution
+## Architecture Overview and Process Flow of the Solution
 
 ![Architecture Overview and Process Flow of the Solution](./ReadmeFiles/Overview.png)
 
@@ -239,7 +242,7 @@ situations such as:
 - A team needs to qualify the purchase of the customer for reasons like ITAR
   certification, etc.
 
-### Walking-through the Scenario Subscription Process
+## Walking-through the Scenario Subscription Process
 
 1. The prospective customer is on the Azure Portal going through the Azure
    Marketplace in-product experience. They find the solution and subscribe to it
@@ -270,7 +273,7 @@ situations such as:
    (having access to the Azure subscription) can be different than the end users
    of the solution.
 8. Subscriber completes the process by submitting the form on the landing page.
-   This sends notification using the configured notification handler. 
+   This sends notification using the configured notification handler.
 9. Operations team takes the appropriate steps (qualifying, provisioning
    resources, etc.).
 10. Once complete, operation team clicks on the activate link in the message.
@@ -285,7 +288,85 @@ situations such as:
     the status.
 17. The operations team may de-provision the customer.
 
-## Running the Sample
+# Running the Sample
+
+Although we recommend you to take the long way to deploy the sample for seeing the components in operation, we also provide easier options for deploying the solution to your Azure subscription.
+
+The solution consists of the following resources
+
+![Architecture Overview and Process Flow of the Solution](./ReadmeFiles/saas-samplesdk-architecture.png)
+
+Please see the following sections for
+
+- [Quick deployment](#quick-deployment)
+- [Detailed deployment steps](#detailed-deployment)
+
+## Quick deployment
+
+You can use one of the options below to deploy the solution
+1- If you already have Azure Active Directory (AAD) app registrations
+2- Use a local script to create AAD app registrations and deploy the solution
+
+### Option 1
+
+Please use this option, if you already have app registrations created and would like to create an App Service, Storage account and Deploy the code to App Service.
+
+The template uses the following parameters:
+
+| Parameter                         | Note                                                                                                                                     |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Web App Name                      | The DNS subdomain of the WebApp                                                                                                          |
+| Web App Admin                     | The account name for the admin console, corresponding to CommandCenter:CommandCenterAdmin app setting                                    |
+| App Service Plan Sku              | The SKU of App Service Plan                                                                                                              |
+| Login App Reg Domain Name         | Domain name from the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:Domain app setting                      |
+| Login App Reg Client Id           | Client ID for the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:AzureAd:ClientId app setting               |
+| Login App Reg Client Secret       | Client secret for the AAD app registration for the landing page AAD SSO, corresponding to AzureAd:ClientSecret app setting               |
+| Fulfillment App Reg Tenant Id     | Tenant ID for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:TenantId app setting         |
+| Fulfillment App Reg Client Id     | App ID for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:ClientId app setting            |
+| Fulfillment App Reg Client Secret | Client secret for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:ClientSecret app setting |
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FCommercial-Marketplace-SaaS-Manual-On-Boarding%2Fmain%2Fresources%2Fdeploy%2Fazuredeploy.json)
+
+### Option 2
+
+If you do not have an AAD app registrations yet, this option includes a script to create the app registrations, and deploys the resources using the template.
+
+Open a PowerShell session, and login to your Azure subscription, then change the current directory to the "deployment" directory of this repo.
+
+> **:warning: IMPORTANT:** The script uses cmdlets from AzureAD module. AzureAD module is not compatible with PowerShell 7+/Core, and supported in PowerShell 5.\*. If you have not have the module already, install it as shown below:
+
+```powershell
+Install-Module -Name AzureAD
+```
+
+```powershell
+cd deployment
+
+# You may need to import AzureAD module, and AzureAD module supports PowerShell 5.x only.
+
+Import-Module AzureAD
+
+#connect to the Azure AD, note if you want to add app registrations to a different tenant, you may specify it with TenantId parameter
+
+Connect-AzureAD
+
+# Login to your Azure subscription separately
+
+Connect-AzAccount
+
+# Optional: get a list of Azure locations, if you want to override the default deployment location, and pass it with the Location parameter of the script.
+Get-AzLocation
+
+# run the deploy file.
+
+# **** Important!: WebAppName is the DNS subdomain of the WebApp and it needs to be unique.
+
+.\deploy.ps1 -ResourceGroupName 'rgGroupName' -WebAppName 'mktplc1' -AppAdmin 'user@domain.com'
+```
+
+## Detailed deployment steps
+
+We will go through the detailed deployment steps in the coming sections.
 
 ### Creating a web application on Azure App Service and deploying the sample with Visual Studio
 
@@ -387,32 +468,32 @@ created above.
 You will need to replace the values marked as `CHANGE`, either by editing the
 `appconfig.json` file in the solution, or by using `dotnet user-secrets` if you are planning share your work publicly.
 
-| Setting                                           | Change/Keep | Notes                                                                                                                                                                                                         |
-| ------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AzureAd:Instance                                  | Keep        | This is used by the library                                                                                                                                                                                   |
-| AzureAd:Domain                                    | Change      | You can find this value on the "Overview" page of the Active Directory you have registered your applications in. If you are not using a custom domain, it is in the format of \<tenant name\>.onmicrosoft.com |
-| AzureAd:TenantId                                  | Keep        | Common authentication endpoint, since this is a multi-tenant app                                                                                                                                              |
-| AzureAd:ClientId                                  | Change      | Copy the clientId of the multi-tenant app from its "Overview" page                                                                                                                                            |
-| AzureAd:ClientSecret                              | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                   |
-| AzureAd:CallbackPath                              | Keep        | Default oidc sign in path                                                                                                                                                                                     |
-| AzureAd:SignedOutCallbackPath                     | Keep        | Default sign out path                                                                                                                                                                                         |
-| MarketplaceClient:ClientId                        | Change      | Copy the clientId of the single-tenant app from its "Overview" page. This AD app is for calling the Fulfillment API                                                                                           |
-| MarketplaceClient:TenantId                        | Change      | Copy the tenantId of the single-tenant app from its "Overview" page.                                                                                                                                          |
-| MarketplaceClient:ClientSecret                    | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                   |
-| WebHookTokenParameters:Instance                   | Keep        | This is used by the library                                                                                                                                                                                   |
-| WebHookTokenParameters:TenantId                   | Change      | Set the same value as MarketplaceClient:TenantId                                                                                                                                                              |
-| WebHookTokenParameters:ClientId                   | Change      | Set the same value as MarketplaceClient:ClientId                                                                                                                                                              |
-| CommandCenter:OperationsStoreConnectionString     | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [Client library documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store) |
-| CommandCenter:CommandCenterAdmin                  | Change      | Change it to the email address you are logging on to the dashboard. Only the users with the domain name of this email is authorized to use the dashboard to display the subscriptions.                        |
-| CommandCenter:ShowUnsubscribed                    | Change      | Change true or false, depending on if you want to see the subscriptions that are not active.                                                                                                                  |
-| CommandCenter:AzureQueue:StorageConnectionString  | Change      | Add the storage account connection string for the queue.                                                                            |
-| CommandCenter:AzureQueue:QueueName                | Change      | Name of the queue the messages will go to.                                                                                          |
-| CommandCenter:EnableDimensionMeterReporting       | Change      | Use this section to enable manually sending usage events on a dimension for a customer subscription through this App. Default: false, change to true if there is at least one dimension enabled on an Offer-Plan and would like to trigger usage events manually. [More information on Marketplace Metering Service dimensions.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/saas-metered-billing)                                     |
-| CommandCenter:Dimensions:DimensionId              | Change      | Use this section if the above EnableDimensionMeterReporting setting is true. Add DimensionId of the enabled custom meter.                                                                                          |
-| CommandCenter:Dimensions:PlanIds                  | Change      | Use this section if the above EnableDimensionMeterReporting setting is true. Add PlanId's of the plans for which the above DimensionId is enabled.                                                                |
-| CommandCenter:Dimensions:OfferIds                 | Change      | Use this section if the above EnableDimensionMeterReporting setting is true. Add OfferId's of the plans for which the above DimensionId is enabled.                                                                    |
+| Setting                                          | Change/Keep | Notes                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AzureAd:Instance                                 | Keep        | This is used by the library                                                                                                                                                                                                                                                                                                                                                                                                     |
+| AzureAd:Domain                                   | Change      | You can find this value on the "Overview" page of the Active Directory you have registered your applications in. If you are not using a custom domain, it is in the format of \<tenant name\>.onmicrosoft.com                                                                                                                                                                                                                   |
+| AzureAd:TenantId                                 | Keep        | Common authentication endpoint, since this is a multi-tenant app                                                                                                                                                                                                                                                                                                                                                                |
+| AzureAd:ClientId                                 | Change      | Copy the clientId of the multi-tenant app from its "Overview" page                                                                                                                                                                                                                                                                                                                                                              |
+| AzureAd:ClientSecret                             | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                                                                                                                                                                                                                                     |
+| AzureAd:CallbackPath                             | Keep        | Default oidc sign in path                                                                                                                                                                                                                                                                                                                                                                                                       |
+| AzureAd:SignedOutCallbackPath                    | Keep        | Default sign out path                                                                                                                                                                                                                                                                                                                                                                                                           |
+| MarketplaceClient:ClientId                       | Change      | Copy the clientId of the single-tenant app from its "Overview" page. This AD app is for calling the Fulfillment API                                                                                                                                                                                                                                                                                                             |
+| MarketplaceClient:TenantId                       | Change      | Copy the tenantId of the single-tenant app from its "Overview" page.                                                                                                                                                                                                                                                                                                                                                            |
+| MarketplaceClient:ClientSecret                   | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                                                                                                                                                                                                                                     |
+| WebHookTokenParameters:Instance                  | Keep        | This is used by the library                                                                                                                                                                                                                                                                                                                                                                                                     |
+| WebHookTokenParameters:TenantId                  | Change      | Set the same value as MarketplaceClient:TenantId                                                                                                                                                                                                                                                                                                                                                                                |
+| WebHookTokenParameters:ClientId                  | Change      | Set the same value as MarketplaceClient:ClientId                                                                                                                                                                                                                                                                                                                                                                                |
+| CommandCenter:OperationsStoreConnectionString    | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [Client library documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store)                                                                                                                                                                                                        |
+| CommandCenter:CommandCenterAdmin                 | Change      | Change it to the email address you are logging on to the dashboard. Only the users with the domain name of this email is authorized to use the dashboard to display the subscriptions.                                                                                                                                                                                                                                          |
+| CommandCenter:ShowUnsubscribed                   | Change      | Change true or false, depending on if you want to see the subscriptions that are not active.                                                                                                                                                                                                                                                                                                                                    |
+| CommandCenter:AzureQueue:StorageConnectionString | Change      | Add the storage account connection string for the queue.                                                                                                                                                                                                                                                                                                                                                                        |
+| CommandCenter:AzureQueue:QueueName               | Change      | Name of the queue the messages will go to.                                                                                                                                                                                                                                                                                                                                                                                      |
+| CommandCenter:EnableDimensionMeterReporting      | Change      | Use this section to enable manually sending usage events on a dimension for a customer subscription through this App. Default: false, change to true if there is at least one dimension enabled on an Offer-Plan and would like to trigger usage events manually. [More information on Marketplace Metering Service dimensions.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/saas-metered-billing) |
+| CommandCenter:Dimensions:DimensionId             | Change      | Use this section if the above EnableDimensionMeterReporting setting is true. Add DimensionId of the enabled custom meter.                                                                                                                                                                                                                                                                                                       |
+| CommandCenter:Dimensions:PlanIds                 | Change      | Use this section if the above EnableDimensionMeterReporting setting is true. Add PlanId's of the plans for which the above DimensionId is enabled.                                                                                                                                                                                                                                                                              |
+| CommandCenter:Dimensions:OfferIds                | Change      | Use this section if the above EnableDimensionMeterReporting setting is true. Add OfferId's of the plans for which the above DimensionId is enabled.                                                                                                                                                                                                                                                                             |
 
-### Create an Offer on Commercial Marketplace Portal in Partner Center
+## Create an Offer on Commercial Marketplace Portal in Partner Center
 
 Once your AAD directory, AAD applications, and web application are setup and
 ready to use, an offer must be created in the
