@@ -31,7 +31,7 @@ In the sections below you will find:
 - [Microsoft commercial marketplace SaaS offers sample - Manual on-boarding of customers](#microsoft-commercial-marketplace-saas-offers-sample---manual-on-boarding-of-customers)
   - [Prerequisites](#prerequisites)
   - [Table of contents](#table-of-contents)
-- [Integrating a software as a service with commercial marketplace](#integrating-a-software-as-a-service-with-commercial-marketplace)
+- [Integrating a software as a service solution with commercial marketplace](#integrating-a-software-as-a-service-solution-with-commercial-marketplace)
   - [Landing page](#landing-page)
     - [Azure AD Requirement: Multi-Tenant Application Registration](#azure-ad-requirement-multi-tenant-application-registration)
   - [Webhook endpoint](#webhook-endpoint)
@@ -69,7 +69,7 @@ In the sections below you will find:
 Let's first start with mentioning how to integrate a SaaS solution with Azure
 Marketplace.
 
-# Integrating a software as a service with commercial marketplace
+# Integrating a software as a service solution with commercial marketplace
 
 Many different types of solution offers are available on Microsoft commercial marketplace for
 the customers to subscribe. Those different types include options such as
