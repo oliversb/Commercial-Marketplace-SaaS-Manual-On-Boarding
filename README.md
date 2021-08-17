@@ -46,6 +46,30 @@ In the sections below you will find:
     - [Option 1](#option-1)
     - [Option 2](#option-2)
   - [Detailed deployment steps](#detailed-deployment-steps)
+    - [Creating a web application on Azure App Service and deploying the sample with Visual Studio](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio)
+    - [Creating a web application on Azure App Service and deploying the sample with Visual Studio Code](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio-code)
+    - [Registering Azure Active Directory Applications](#registering-azure-active-directory-applications)
+      - [Creating a New Directory](#creating-a-new-directory)
+      - [Registering the Apps](#registering-the-apps)
+    - [Creating a Storage Account](#creating-a-storage-account)
+    - [Change the Configuration Settings](#change-the-configuration-settings)
+  - [Create an Offer on Commercial Marketplace Portal in Partner Center](#create-an-offer-on-commercial-marketplace-portal-in-partner-center)
+    - [Example Offer Setup in Commercial Marketplace Portal](#example-offer-setup-in-commercial-marketplace-portal)
+      - [Offer Setup](#offer-setup)
+      - [Properties](#properties)
+      - [Offer Listing](#offer-listing)
+      - [Preview Audience](#preview-audience)
+      - [Technical Configuration](#technical-configuration)
+      - [Plan Overview](#plan-overview)
+      - [Co-Sell with Microsoft](#co-sell-with-microsoft)
+      - [Resell Through CSPs](#resell-through-csps)
+      - [Review and Publish](#review-and-publish)
+  - [Signing Up for Your Offer](#signing-up-for-your-offer)
+
+  - [Quick deployment](#quick-deployment)
+    - [Option 1](#option-1)
+    - [Option 2](#option-2)
+  - [Detailed deployment steps](#detailed-deployment-steps)
 
     - [Creating a web application on Azure App Service and deploying the sample with Visual Studio](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio)
     - [Creating a web application on Azure App Service and deploying the sample with Visual Studio Code](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio-code)
@@ -54,6 +78,7 @@ In the sections below you will find:
       - [Registering the Apps](#registering-the-apps)
     - [Creating a Storage Account](#creating-a-storage-account)
     - [Change the Configuration Settings](#change-the-configuration-settings)
+
   - [Create an Offer on Commercial Marketplace Portal in Partner Center](#create-an-offer-on-commercial-marketplace-portal-in-partner-center)
     - [Example Offer Setup in Commercial Marketplace Portal](#example-offer-setup-in-commercial-marketplace-portal)
       - [Offer Setup](#offer-setup)
@@ -326,7 +351,7 @@ The template uses the following parameters:
 | Fulfillment App Reg Client Id     | App ID for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:ClientId app setting            |
 | Fulfillment App Reg Client Secret | Client secret for the AAD app registration for calling the marketplace APIs, corresponding to MarketplaceClient:ClientSecret app setting |
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FCommercial-Marketplace-SaaS-Manual-On-Boarding%2Fmain%2Fresources%2Fdeploy%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FCommercial-Marketplace-SaaS-Manual-On-Boarding%2Fmain%2F%2Fdeployment%2Fazuredeploy.json)
 
 ### Option 2
 
