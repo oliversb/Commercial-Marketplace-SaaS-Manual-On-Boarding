@@ -46,6 +46,7 @@ In the sections below you will find:
     - [Option 1](#option-1)
     - [Option 2](#option-2)
   - [Detailed deployment steps](#detailed-deployment-steps)
+
     - [Creating a web application on Azure App Service and deploying the sample with Visual Studio](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio)
     - [Creating a web application on Azure App Service and deploying the sample with Visual Studio Code](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio-code)
     - [Registering Azure Active Directory Applications](#registering-azure-active-directory-applications)
