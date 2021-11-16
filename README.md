@@ -1,3 +1,10 @@
+- - - -
+
+# :point_right: This repo is Deprecated and no longer maintained. Please see the currently maintained repo here, [SaaS Accelerator](aka.ms/saasaccelerator). #
+
+- - - -
+
+
 ![Build .NET Core](https://github.com/Azure-Samples/Commercial-Marketplace-SaaS-Manual-On-Boarding/workflows/Build%20.NET%20Core/badge.svg)
 
 ![Deploy to App Service](https://github.com/microsoft/Commercial-Marketplace-SaaS-Manual-On-Boarding/workflows/Deploy%20to%20App%20Service/badge.svg)
