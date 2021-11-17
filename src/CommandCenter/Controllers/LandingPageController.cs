@@ -141,6 +141,7 @@ namespace CommandCenter.Controllers
 
                 // Maybe the end users are a completely different set of contacts, start with one
                 BusinessUnitContactEmail = this.User.Identity.GetUserEmail(),
+                //BusinessUnitContactPhone = "",
 
                 PlanId = isSampleToken ? "purchaser@purchaser.com" : resolvedSubscription.PlanId,
                 SubscriptionId = isSampleToken ? Guid.Empty : resolvedSubscription.Id.Value,

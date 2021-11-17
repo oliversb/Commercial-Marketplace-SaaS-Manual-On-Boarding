@@ -30,6 +30,13 @@ namespace CommandCenter.Models
         public string BusinessUnitContactEmail { get; set; }
 
         /// <summary>
+        /// Gets or sets business contact phone number.
+        /// </summary>
+        [Display(Name = "Business unit contact phone number")]
+        [RegularExpression(@"^(\+\d{1,3}[- ]?)?\d{10}$", ErrorMessage ="Enter valid phone number")]
+        public string BusinessUnitContactPhone { get; set; }
+
+        /// <summary>
         ///  Gets or sets email.
         /// </summary>
         [Display(Name = "Preferred user name")]

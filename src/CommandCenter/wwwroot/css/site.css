@@ -40,6 +40,39 @@ body {
     margin-bottom: 60px;
 }
 
+img {
+    max-width: 100%;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.brand-logo {
+    width: 210px;
+    height: 40px;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    -webkit-transition: opacity 200ms ease-out;
+    transition: opacity 200ms ease-out;
+}
+
+    .brand-logo:hover {
+        opacity: 0.8;
+    }
+
+    .brand-logo.w--current {
+        width: 210px;
+        height: 40px;
+    }
+
+
 .footer {
     bottom: 0;
     /* Set the fixed height of the footer here */
