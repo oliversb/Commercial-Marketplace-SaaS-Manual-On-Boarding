@@ -24,135 +24,6 @@ else
             <div class="col-lg-12">
                 <div class="accordion" id="landingPageComponents">
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Recommended minimum for landing page. This is the only place a customer's contact information can be collected.
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne">
-                            <div class="accordion-body">
-                                <div class="panel panel-default">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="card">
-                                                <div class="card-title">
-                                                    <p class="fw-bold">Information from claims</p>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayNameFor(model => model.EmailFromClaims):</label>
-
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayFor(model => model.EmailFromClaims) </label>
-                                                            <input asp-for="EmailFromClaims" type="hidden" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayNameFor(model => model.NameFromOpenIdConnect):</label>
-
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayFor(model => model.NameFromOpenIdConnect) </label>
-                                                            <input asp-for="NameFromOpenIdConnect" type="hidden" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="card">
-                                                <div class="card-title">
-
-                                                    <p class="fw-bold">Information from Graph API</p>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayNameFor(model => model.EmailFromGraph):</label>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayFor(model => model.EmailFromGraph) </label>
-                                                            <input asp-for="EmailFromGraph" type="hidden" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayNameFor(model => model.NameFromGraph):</label>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayFor(model => model.NameFromGraph) </label>
-                                                            <input asp-for="NameFromGraph" type="hidden" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayNameFor(model => model.UserPrincipalName):</label>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <label class="form-label">@Html.DisplayFor(model => model.UserPrincipalName) </label>
-                                                            <input asp-for="UserPrincipalName" type="hidden" class="form-control" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br />
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="card">
-                                            <div class="card-title">
-
-                                                <p class="fw-bold">Information from Fulfillment API</p>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <label class="form-label">@Html.DisplayNameFor(model => model.PurchaserUPN):</label>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <label class="form-label">@Html.DisplayFor(model => model.PurchaserUPN) </label>
-                                                        <input asp-for="PurchaserUPN" type="hidden" class="form-control" />
-                                                    </div>
-                                                </div>
-                                                <br />
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <label class="form-label">@Html.DisplayNameFor(model => model.BeneficiaryUPN):</label>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <label class="form-label">@Html.DisplayFor(model => model.BeneficiaryUPN) </label>
-                                                        <input asp-for="BeneficiaryUPN" type="hidden" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="card">
-                                            <div class="card-title">
-                                                <p class="fw-bold">Customer contact email</p>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <label class="form-label">@Html.DisplayNameFor(model => model.PurchaserEmail):</label>
-                                                        <input asp-for="PurchaserEmail" type="email" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
                         <h2 class="accordion-header" id="headingTwo">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                                 You can collect additional information as the first step of the onboarding process.
@@ -181,6 +52,21 @@ else
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <p>*The purchaser (who sees this page) can be different than the actual user of the solution.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label class="form-label">@Html.DisplayNameFor(model => model.BusinessUnitContactPhone):</label>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <input asp-for="BusinessUnitContactPhone" type="number" class="form-control" />
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    
                                                 </div>
                                             </div>
                                         </div>
